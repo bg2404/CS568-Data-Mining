@@ -86,7 +86,7 @@ vector<int> DBSCAN::rangeQuery(Point p) {
 }
 
 double DBSCAN::dist(Point p1, Point p2) {
-    uint64_t d = 0;
+    double d = 0;
     uint dim = 1;
     for (uint i = 0; i < 32; ++i, dim <<= 1) {
         if (dim & m_subspace) {

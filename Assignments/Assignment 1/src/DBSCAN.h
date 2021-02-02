@@ -11,7 +11,7 @@
 
 using namespace std;
 
-typedef vector<int> Point;
+typedef vector<double> Point;
 
 using Value = std::pair<Point, uint>;
 
