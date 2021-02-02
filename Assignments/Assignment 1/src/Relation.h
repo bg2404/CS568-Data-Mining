@@ -5,9 +5,8 @@
 
 using namespace std;
 
-template<class T>
-class Relation : public vector<vector<T>>
-{
+template <class T>
+class Relation : public vector<vector<T>> {
 };
 
 #endif

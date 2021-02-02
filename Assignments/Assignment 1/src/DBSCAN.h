@@ -4,6 +4,10 @@
 #include <cstdlib>
 #include <vector>
 
+#include "Cluster.h"
+#include "Relation.h"
+#include "Subspace.h"
+
 #define SUCCESS 0
 #define UNCLASSIFIED -1
 #define NOISE -2
@@ -16,27 +20,27 @@ typedef vector<double> Point;
 using Value = std::pair<Point, uint>;
 
 class DBSCAN {
-	vector<Point> m_points;
-	double m_eps;
-	uint m_minPts;
-	vector<int> m_clusterIDs;
-	vector<vector<Point> > m_clusters;
-	uint m_numPoints;
-	uint m_subspace;
+    Relation<double> m_points;
+    double m_eps;
+    uint m_minPts;
+    vector<int> m_clusterIDs;
+    vector<Cluster> m_clusters;
+    uint m_numPoints;
+    Subspace m_subspace;
 
-	int expandCuster(int, uint);
-	vector<int> rangeQuery(Point);
-	double dist(Point, Point);
+    int expandCuster(int, uint);
+    vector<int> rangeQuery(Point);
+    double dist(Point, Point);
 
-	public:
-	DBSCAN(vector<Point> points, uint m_subspace, double eps, uint minPts);
-	~DBSCAN();
-	uint getSubspace();
-	double getEps();
-	uint getMinPts();
-	vector<Point> getPoints();
-	uint getNumPoints();
-	vector<vector<Point> > getClusters();
+   public:
+    DBSCAN(Relation<double> points, Subspace m_subspace, double eps, uint minPts);
+    ~DBSCAN();
+    Subspace getSubspace();
+    double getEps();
+    uint getMinPts();
+    Relation<double> getPoints();
+    uint getNumPoints();
+    vector<Cluster> getClusters();
 };
 
 #endif
