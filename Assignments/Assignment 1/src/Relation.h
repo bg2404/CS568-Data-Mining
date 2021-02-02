@@ -1,13 +1,13 @@
-#ifndef Relation_H
-#define Relation_H
+#ifndef RELATION_H
+#define RELATION_H
 
 #include <vector>
 
 using namespace std;
 
-class Relation : public vector<vector<float>>
+template<class T>
+class Relation : public vector<vector<T>>
 {
-    int get_dimensionality();
 };
 
 #endif

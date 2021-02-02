@@ -1,5 +1,5 @@
-#ifndef ReadInput_H
-#define ReadInput_H
+#ifndef READINPUT_H
+#define READINPUT_H
 
 #include <iostream>
 #include <fstream>
@@ -11,15 +11,18 @@ using namespace std;
 
 class ReadInput
 {
-private:
-    ifstream input_file;
+	private:
+		ifstream inputFile;
 
-public:
-    //open the file
-    ReadInput(string file);
+	public:
+		// open the file
+		ReadInput(string file);
 
-    //read input
-    Relation read();
+		// close the file
+		~ReadInput();
+
+		//read input
+		Relation<double> read();
 };
 
 #endif

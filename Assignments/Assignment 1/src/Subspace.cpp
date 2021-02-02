@@ -13,6 +13,12 @@ Subspace::Subspace(int dimension)
 	this -> dimensionality = 1;
 }
 
+Subspace::Subspace()
+{
+	this -> dimensions = vector<int>();
+	this -> dimensionality = 0;
+}
+
 Subspace::Subspace(vector<int>& dimensions)
 {
 	this -> dimensions = dimensions;

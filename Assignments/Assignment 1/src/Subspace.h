@@ -16,6 +16,9 @@ class Subspace
 		// Create a 1-dimensional subspace
 		Subspace(int dimension);
 
+		// Default Constructor
+		Subspace();
+
 		// Create a subspace with given dimensions
 		Subspace(vector<int>& dimensions);
 
