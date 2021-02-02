@@ -15,9 +15,7 @@
 
 using namespace std;
 
-typedef vector<double> Point;
-
-using Value = std::pair<Point, uint>;
+using Value = std::pair<vector<double>, uint>;
 
 class DBSCAN {
     Relation<double> m_points;
@@ -29,8 +27,9 @@ class DBSCAN {
     Subspace m_subspace;
 
     int expandCuster(int, uint);
-    vector<int> rangeQuery(Point);
-    double dist(Point, Point);
+    vector<int> rangeQuery(vector<double>);
+    double dist(vector<double>, vector<double>);
+    vector<double> getMean(vector<int>& v);
 
    public:
     DBSCAN(Relation<double> points, Subspace m_subspace, double eps, uint minPts);

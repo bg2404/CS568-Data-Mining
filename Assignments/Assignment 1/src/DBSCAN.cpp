@@ -1,97 +1,123 @@
 #include "DBSCAN.h"
 
+#include <assert.h>
+
 #include <cmath>
 #include <iostream>
 #include <queue>
 #include <vector>
 
-DBSCAN::DBSCAN(vector<Point> points, uint subspace, double eps, uint minPts) : m_points(points), m_subspace(subspace), m_eps(eps), m_minPts(minPts) {
-	m_numPoints = points.size();
-	m_clusterIDs.clear();
-	m_clusters.clear();
+#include "Cluster.h"
+#include "Relation.h"
+#include "Subspace.h"
+
+DBSCAN::DBSCAN(Relation<double> points, Subspace subspace, double eps, uint minPts) : m_points(points), m_subspace(subspace), m_eps(eps), m_minPts(minPts) {
+    m_numPoints = points.size();
+    m_clusterIDs.clear();
+    m_clusters.clear();
 }
 DBSCAN::~DBSCAN() {}
 
-uint DBSCAN::getSubspace() { return m_subspace; }
+Subspace DBSCAN::getSubspace() { return m_subspace; }
 
 double DBSCAN::getEps() { return m_eps; }
 
 uint DBSCAN::getMinPts() { return m_minPts; }
 
-vector<Point> DBSCAN::getPoints() { return m_points; }
+Relation<double> DBSCAN::getPoints() { return m_points; }
 
 uint DBSCAN::getNumPoints() { return m_numPoints; }
 
-vector<vector<Point> > DBSCAN::getClusters() {
-	if (m_clusters.empty()) {
-		int clusterID = 1;
-		m_clusterIDs.resize(m_numPoints, UNCLASSIFIED);
-		for (uint i = 0; i < m_numPoints; ++i) {
-			if (m_clusterIDs[i] == UNCLASSIFIED) {
-				if (expandCuster(i, clusterID) == SUCCESS) {
-					++clusterID;
-				}
-			}
-		}
-		m_clusters.resize(clusterID - 1);
-		for (int i = 0; i < m_numPoints; ++i) {
-			m_clusters[m_clusterIDs[i] - 1].push_back(m_points[i]);
-		}
-	}
-	return m_clusters;
+vector<Cluster> DBSCAN::getClusters() {
+    if (m_clusters.empty()) {
+        int clusterID = 1;
+        m_clusterIDs.resize(m_numPoints, UNCLASSIFIED);
+        for (uint i = 0; i < m_numPoints; ++i) {
+            if (m_clusterIDs[i] == UNCLASSIFIED) {
+                if (expandCuster(i, clusterID) == SUCCESS) {
+                    ++clusterID;
+                }
+            }
+        }
+        --clusterID;
+        vector<vector<int> > cluster_ids(clusterID);
+        for (int i = 0; i < m_numPoints; ++i) {
+            cluster_ids[m_clusterIDs[i] - 1].push_back(i);
+        }
+        for (int i = 0; i < clusterID; ++i) {
+            set<int> s(cluster_ids[i].begin(), cluster_ids[i].end());
+            vector<double> mean = getMean(cluster_ids[i]);
+            Cluster cluster("Cluster" + to_string(i), s, false, m_subspace, mean);
+            m_clusters.push_back(cluster);
+        }
+    }
+    return m_clusters;
 }
 
 int DBSCAN::expandCuster(int idx, uint clusterID) {
-	vector<int> seeds = rangeQuery(m_points[idx]);
-	if (seeds.size() < m_minPts) {
-		m_clusterIDs[idx] = NOISE;
-		return FAILURE;
-	} else {
-		queue<int> qseeds;
-		for (uint i = 0; i < seeds.size(); ++i) {
-			m_clusterIDs[seeds[i]] = clusterID;
-			if (seeds[i] != idx) {
-				qseeds.push(seeds[i]);
-			}
-		}
+    vector<int> seeds = rangeQuery(m_points[idx]);
+    if (seeds.size() < m_minPts) {
+        m_clusterIDs[idx] = NOISE;
+        return FAILURE;
+    } else {
+        queue<int> qseeds;
+        for (uint i = 0; i < seeds.size(); ++i) {
+            m_clusterIDs[seeds[i]] = clusterID;
+            if (seeds[i] != idx) {
+                qseeds.push(seeds[i]);
+            }
+        }
 
-		while (!qseeds.empty()) {
-			int currentP = qseeds.front();
-			vector<int> result = rangeQuery(m_points[currentP]);
-			if (result.size() >= m_minPts) {
-				for (int resultP : result) {
-					if (m_clusterIDs[resultP] == UNCLASSIFIED ||
-							m_clusterIDs[resultP] == NOISE) {
-						if (m_clusterIDs[resultP] == UNCLASSIFIED) {
-							qseeds.push(resultP);
-						}
-						m_clusterIDs[resultP] = clusterID;
-					}
-				}
-			}
-			qseeds.pop();
-		}
-		return SUCCESS;
-	}
+        while (!qseeds.empty()) {
+            int currentP = qseeds.front();
+            vector<int> result = rangeQuery(m_points[currentP]);
+            if (result.size() >= m_minPts) {
+                for (int resultP : result) {
+                    if (m_clusterIDs[resultP] == UNCLASSIFIED ||
+                        m_clusterIDs[resultP] == NOISE) {
+                        if (m_clusterIDs[resultP] == UNCLASSIFIED) {
+                            qseeds.push(resultP);
+                        }
+                        m_clusterIDs[resultP] = clusterID;
+                    }
+                }
+            }
+            qseeds.pop();
+        }
+        return SUCCESS;
+    }
 }
 
-vector<int> DBSCAN::rangeQuery(Point p) {
-	vector<int> result;
-	for (int i = 0; i < m_numPoints; ++i) {
-		if (dist(p, m_points[i]) <= m_eps) {
-			result.push_back(i);
-		}
-	}
-	return result;
+vector<int> DBSCAN::rangeQuery(vector<double> p) {
+    vector<int> result;
+    for (int i = 0; i < m_numPoints; ++i) {
+        if (dist(p, m_points[i]) <= m_eps) {
+            result.push_back(i);
+        }
+    }
+    return result;
 }
 
-double DBSCAN::dist(Point p1, Point p2) {
-	double d = 0;
-	uint dim = 1;
-	for (uint i = 0; i < 32; ++i, dim <<= 1) {
-		if (dim & m_subspace) {
-			d += ((long long)p1[i] - p2[i]) * (p1[i] - p2[i]);
-		}
-	}
-	return sqrt(d);
+double DBSCAN::dist(vector<double> p1, vector<double> p2) {
+    double d = 0;
+    for (uint i = 0; i < 32; ++i) {
+        if (m_subspace.hasDimension(i)) {
+            d += ((long long)p1[i] - p2[i]) * (p1[i] - p2[i]);
+        }
+    }
+    return sqrt(d);
+}
+
+vector<double> DBSCAN::getMean(vector<int>& v) {
+    assert(!v.empty());
+    vector<double> p = m_points[v[0]];
+    for (uint i = 1; i < v.size(); ++i) {
+        for (uint j = 0; j < p.size(); ++j) {
+            p[j] += m_points[v[i]][j];
+        }
+    }
+    for (uint i = 0; i < p.size(); ++i) {
+        p[i] /= v.size();
+    }
+    return p;
 }
