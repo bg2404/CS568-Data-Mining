@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <vector>
+#include <map>
 
 #include "Cluster.h"
 #include "Relation.h"
@@ -17,7 +18,8 @@ using namespace std;
 
 using Value = std::pair<vector<double>, uint>;
 
-class DBSCAN {
+class DBSCAN
+{
     Relation<double> m_points;
     double m_eps;
     uint m_minPts;
@@ -25,14 +27,15 @@ class DBSCAN {
     vector<Cluster> m_clusters;
     uint m_numPoints;
     Subspace m_subspace;
+    map<vector<double>, int> m_ids;
 
     int expandCuster(int, uint);
     vector<int> rangeQuery(vector<double>);
     double dist(vector<double>, vector<double>);
-    vector<double> getMean(vector<int>& v);
+    vector<double> getMean(vector<int> &v);
 
-   public:
-    DBSCAN(Relation<double> points, Subspace m_subspace, double eps, uint minPts);
+public:
+    DBSCAN(Relation<double> points, Subspace m_subspace, double eps, uint minPts, map<vector<double>, int> ids);
     ~DBSCAN();
     Subspace getSubspace();
     double getEps();

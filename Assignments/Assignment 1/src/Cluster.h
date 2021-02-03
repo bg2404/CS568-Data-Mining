@@ -3,38 +3,40 @@
 
 #include <iostream>
 #include <set>
+#include <cstdlib>
 #include <vector>
 
 #include "Subspace.h"
 
 using namespace std;
 
-class Cluster {
-   private:
+class Cluster
+{
+private:
     string name = "";
     set<int> ids;
     bool noise = false;
     Subspace subspace;
     vector<double> mean;
 
-   public:
+public:
     // Constructor
-    Cluster(string name, set<int>& ids, bool noise, Subspace& subspace, vector<double>& mean);
+    Cluster(string name, set<int> &ids, bool noise, Subspace &subspace, vector<double> &mean);
 
     // Returns the number of ids inside the cluster
     int size();
 
     // Getters
-    string& getName();
-    set<int>& getIds();
+    string &getName();
+    set<int> &getIds();
     bool isNoise();
-    Subspace& getSubspace();
+    Subspace &getSubspace();
 
     // Setters
-    void setName(string& name);
-    void setIds(set<int>& ids);
+    void setName(string &name);
+    void setIds(set<int> &ids);
     void setNoise(bool noise);
-    void setSubspace(Subspace& subspace);
+    void setSubspace(Subspace &subspace);
 
     // Displays the Cluster details
     void print();

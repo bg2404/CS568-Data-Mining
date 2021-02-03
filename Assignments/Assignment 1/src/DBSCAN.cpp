@@ -7,6 +7,7 @@
 #include <queue>
 #include <vector>
 #include <map>
+#include <set>
 
 #include "Cluster.h"
 #include "Relation.h"
