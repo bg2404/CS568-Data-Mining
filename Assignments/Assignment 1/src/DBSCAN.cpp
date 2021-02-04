@@ -13,8 +13,9 @@
 #include "Relation.h"
 #include "Subspace.h"
 
-DBSCAN::DBSCAN(Relation<double> points, Subspace subspace, double eps, uint minPts, map<vector<double>, int> ids) : m_points(points), m_subspace(subspace), m_eps(eps), m_minPts(minPts), m_ids(ids)
+DBSCAN::DBSCAN(Relation<double> points, Subspace subspace, double eps, uint minPts, map<vector<double>, int> ids) : m_points(points), m_eps(eps), m_minPts(minPts), m_ids(ids)
 {
+    m_subspace = subspace;
     m_numPoints = points.size();
     m_clusterIDs.clear();
     m_clusters.clear();
@@ -51,7 +52,7 @@ vector<Cluster> DBSCAN::getClusters()
         int dim = m_points[0].size();
         vector<vector<int>> cluster_ids(clusterID);
         vector<vector<double>> mean(clusterID, vector<double>(dim, 0));
-        for (int i = 0; i < m_numPoints; ++i)
+        for (int i = 0; i < (int)m_numPoints; ++i)
         {
             cluster_ids[m_clusterIDs[i] - 1].push_back(m_ids[m_points[i]]);
             for (int j = 0; j < dim; ++j)
@@ -117,7 +118,7 @@ int DBSCAN::expandCuster(int idx, uint clusterID)
 vector<int> DBSCAN::rangeQuery(vector<double> p)
 {
     vector<int> result;
-    for (int i = 0; i < m_numPoints; ++i)
+    for (int i = 0; i < (int)m_numPoints; ++i)
     {
         if (dist(p, m_points[i]) <= m_eps)
         {
@@ -134,7 +135,7 @@ double DBSCAN::dist(vector<double> p1, vector<double> p2)
     {
         if (m_subspace.hasDimension(i))
         {
-            d += ((long long)p1[i] - p2[i]) * (p1[i] - p2[i]);
+            d += ((long double)p1[i] - p2[i]) * (p1[i] - p2[i]);
         }
     }
     return sqrt(d);

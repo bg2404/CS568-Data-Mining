@@ -66,8 +66,8 @@ bool Subspace::isSubspace(Subspace& subspace) {
 }
 
 bool Subspace::hasDimension(int i) {
-    if (i < this->dimensions.size()) {
-        return this->dimensions[i];
+    if (i < (int)((this->dimensions).size())) {
+        return (this->dimensions)[i];
     }
     return false;
 }

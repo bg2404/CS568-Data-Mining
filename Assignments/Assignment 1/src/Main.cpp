@@ -2,6 +2,7 @@
 #include <set>
 #include <vector>
 
+#include "DBSCAN.h"
 #include "Cluster.h"
 #include "ReadInput.h"
 #include "Subspace.h"
@@ -9,16 +10,35 @@
 using namespace std;
 
 int main() {
-    ReadInput r("input.txt");
+    ReadInput r("data.csv");
     Relation<double> relation = r.read();
     for (auto x : relation) {
         for (auto y : x)
             cout << y << ' ';
         cout << '\n';
     }
-    set<int> ids = {1, 3, 4, 9, 10};
+    
+
+    vector<int> space = {1, 0, 1};
+    Subspace subs(space);
     vector<double> mean;
+
+    map<vector<double>, int> id;
+    for(int i = 0; i < relation.size(); i++)
+	    id[relation[i]] = i;
+
+    subs.print();
+    DBSCAN dbscan(relation, subs, 10.0, 1, id);
+    vector<Cluster> cl = dbscan.getClusters();
+
+    for(auto x : cl)
+    {
+	    x.print();
+	    cout << "----------------\n";
+    }
     string name = "MyCluster";
+    
+    set<int> ids = {1, 3, 4, 9, 10};
     Subspace s3(3);
     Cluster c(name, ids, false, s3, mean);
     c.print();
