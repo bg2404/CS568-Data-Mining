@@ -50,21 +50,24 @@ vector<Cluster> DBSCAN::getClusters()
         }
         --clusterID;
         int dim = m_points[0].size();
-        vector<vector<int>> cluster_ids(clusterID);
-        vector<vector<double>> mean(clusterID, vector<double>(dim, 0));
-        for (int i = 0; i < (int)m_numPoints; ++i)
+        if (clusterID > 0)
         {
-            cluster_ids[m_clusterIDs[i] - 1].push_back(m_ids[m_points[i]]);
-            for (int j = 0; j < dim; ++j)
-                mean[m_clusterIDs[i] - 1][j] += m_points[i][j];
-        }
-        for (int i = 0; i < clusterID; ++i)
-        {
-            set<int> s(cluster_ids[i].begin(), cluster_ids[i].end());
-            for (int j = 0; j < dim; ++j)
-                mean[i][j] /= cluster_ids.size();
-            Cluster cluster("Cluster" + to_string(i), s, false, m_subspace, mean[i]);
-            m_clusters.push_back(cluster);
+            vector<vector<int>> cluster_ids(clusterID);
+            vector<vector<double>> mean(clusterID, vector<double>(dim, 0));
+            for (int i = 0; i < (int)m_numPoints; ++i)
+            {
+                cluster_ids[m_clusterIDs[i] - 1].push_back(m_ids[m_points[i]]);
+                for (int j = 0; j < dim; ++j)
+                    mean[m_clusterIDs[i] - 1][j] += m_points[i][j];
+            }
+            for (int i = 0; i < clusterID; ++i)
+            {
+                set<int> s(cluster_ids[i].begin(), cluster_ids[i].end());
+                for (int j = 0; j < dim; ++j)
+                    mean[i][j] /= cluster_ids.size();
+                Cluster cluster("Cluster" + to_string(i), s, false, m_subspace, mean[i]);
+                m_clusters.push_back(cluster);
+            }
         }
     }
     return m_clusters;

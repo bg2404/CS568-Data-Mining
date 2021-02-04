@@ -10,8 +10,8 @@ using namespace std;
 int main()
 
 {
-    // SUBCLU subclu("input.txt", 2, 20, 1);
-    // map<Subspace, vector<Cluster>> result = subclu.run();
+    SUBCLU subclu("input.txt", 2, 30, 1);
+    map<Subspace, vector<Cluster>> result = subclu.run();
 
     // for (auto i : result)
     // {
@@ -21,5 +21,6 @@ int main()
     //     {
     //         c.print();
     //     }
+    //     cout << "*******************************************\n";
     // }
 }

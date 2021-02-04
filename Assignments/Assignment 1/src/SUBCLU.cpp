@@ -18,7 +18,7 @@ using namespace std;
 
 SUBCLU::SUBCLU(string filename, int minPts, double epsilon, int minDim)
 {
-    this->minPnts = minPnts;
+    this->minPnts = minPts;
     this->epsilon = epsilon;
     this->minDim = minDim;
 
@@ -40,27 +40,28 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
         cout << "Error: SUBCLU needs Multivariate Data";
         return Clusterings;
     }
-
     for (int dim = 0; dim < dimensionality; dim++)
     {
         Subspace currSubspace(dim);
         DBSCAN dbscan(dataBase, currSubspace, epsilon, minPnts, dbids);
         vector<Cluster> clusters = dbscan.getClusters();
-
         if (!clusters.empty())
         {
             subspaces.push_back(currSubspace);
             Clusterings[currSubspace] = clusters;
         }
     }
-
     for (int dim = 2; dim <= dimensionality; dim++)
     {
+        cout << "Dim " << dim << "\n";
         vector<Subspace> candidates = generateSubspaceCandidates(subspaces);
         vector<Subspace> sub_d;
 
         for (Subspace candidate : candidates)
         {
+            // cout << "*********************\n";
+            // candidate.print();
+            // cout << "*********************\n";
             Subspace bestSubspace = besttSubspace(subspaces, candidate);
             vector<Cluster> clusters;
 
@@ -87,17 +88,16 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
         subspaces = sub_d;
     }
 
-    int numClusters = 0;
-    set<int> noise;
+    // int numClusters = 0;
+    // set<int> noise;
 
-    map<Subspace, vector<Cluster>> filtered;
-    for (auto it = Clusterings.rbegin(); it != Clusterings.rend(); it++)
-    {
-        Subspace subspace = it->first;
-        if (subspace.getDimensionality() < minDim)
-            continue;
-    }
-
+    // map<Subspace, vector<Cluster>> filtered;
+    // for (auto it = Clusterings.rbegin(); it != Clusterings.rend(); it++)
+    // {
+    //     Subspace subspace = it->first;
+    //     if (subspace.getDimensionality() < minDim)
+    //         continue;
+    // }
     return Clusterings;
 }
 
