@@ -56,9 +56,12 @@ vector<Cluster> DBSCAN::getClusters()
             vector<vector<double>> mean(clusterID, vector<double>(dim, 0));
             for (int i = 0; i < (int)m_numPoints; ++i)
             {
-                cluster_ids[m_clusterIDs[i] - 1].push_back(m_ids[m_points[i]]);
-                for (int j = 0; j < dim; ++j)
-                    mean[m_clusterIDs[i] - 1][j] += m_points[i][j];
+		if(m_clusterIDs[i] - 1 >= 0)
+		{
+			cluster_ids[m_clusterIDs[i] - 1].push_back(m_ids[m_points[i]]);
+			for (int j = 0; j < dim; ++j)
+			    mean[m_clusterIDs[i] - 1][j] += m_points[i][j];
+		}
             }
             for (int i = 0; i < clusterID; ++i)
             {

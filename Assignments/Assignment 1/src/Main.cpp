@@ -12,7 +12,7 @@ using namespace std;
 
 int main() {
 
-    SUBCLU subclu("data.csv", 10.0, 1, 1);
+    SUBCLU subclu("data.csv", 1, 70, 1);
 
     map<Subspace, vector<Cluster>> res = subclu.run();
     
