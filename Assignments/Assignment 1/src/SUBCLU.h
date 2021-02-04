@@ -29,7 +29,6 @@ public:
     vector<Subspace> generateSubspaceCandidates(vector<Subspace> &subspaces);
     Subspace besttSubspace(vector<Subspace> &subspaces, Subspace &candidate);
     bool checkLower(Subspace &candidate, vector<Subspace> &subspaces);
-    bool contains(vector<Subspace> &subspaces, vector<int> temp);
 };
 
 #endif

@@ -32,10 +32,12 @@ vector<int> &Subspace::getDimensions()
     return this->dimensions;
 }
 
-int Subspace::getDimensionality()
+int& Subspace::getDimensionality()
 {
     return this->dimensionality;
 }
+
+
 
 Subspace Subspace::join(Subspace &other)
 {
@@ -49,12 +51,12 @@ vector<int> Subspace::joinLastDimensions(Subspace &other)
     if ((this->dimensionality) != other.dimensionality)
         return vector<int>();
 
-    if ((this->dimensionality) == 1)
-        return BitsUtil::orVectors(this->dimensions, other.dimensions);
 
     if ((this->dimensions).size() >= (other.dimensions).size())
         return vector<int>();
 
+    if ((this->dimensionality) == 1)
+        return BitsUtil::orVectors(this->dimensions, other.dimensions);
     result = BitsUtil::orVectors(this->dimensions, other.dimensions);
 
     if (count(result.begin(), result.end(), 1) != this->dimensionality + 1)
@@ -109,7 +111,7 @@ bool Subspace::operator<(const Subspace &s2) const
     }
     else
     {
-        for (int i = 0; i < dimensions.size(); i++)
+        for (int i = 0; i < (int)(dimensions.size()); i++)
         {
             if ((dimensions[i] + s2.dimensions[i]) == 1)
             {

@@ -24,7 +24,7 @@ public:
 
     // Getters
     vector<int> &getDimensions();
-    int getDimensionality();
+    int& getDimensionality();
 
     // Joins subspaces to create new subspace
     Subspace join(Subspace &other);

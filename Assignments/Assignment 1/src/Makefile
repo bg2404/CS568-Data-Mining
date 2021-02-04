@@ -5,11 +5,14 @@ TARGET = subclu
 
 all: $(TARGET)
 
-$(TARGET): Subspace.o BitsUtil.o Main.o Cluster.o Relation.o ReadInput.o DBSCAN.o
-			$(CC) $(CFLAGS) -o $(TARGET) Main.o Subspace.o BitsUtil.o Cluster.o Relation.o ReadInput.o DBSCAN.o
+$(TARGET): Subspace.o BitsUtil.o Main.o Cluster.o Relation.o ReadInput.o DBSCAN.o SUBCLU.o
+			$(CC) $(CFLAGS) -o $(TARGET) Main.o Subspace.o BitsUtil.o Cluster.o Relation.o ReadInput.o DBSCAN.o SUBCLU.o
 
 Main.o: Main.cpp
 	$(CC) $(CFLAGS) -c Main.cpp
+
+SUBCLU.o: SUBCLU.h Cluster.h Relation.h DBSCAN.h ReadInput.h SUBCLU.cpp
+	$(CC) $(CFLAGS) -c SUBCLU.cpp
 
 DBSCAN.o: DBSCAN.h Cluster.h Relation.h Subspace.h DBSCAN.cpp
 	$(CC) $(CFLAGS) -c DBSCAN.cpp
