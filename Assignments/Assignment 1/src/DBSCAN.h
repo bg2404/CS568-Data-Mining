@@ -2,8 +2,8 @@
 #define DBSCAN_H
 
 #include <cstdlib>
-#include <vector>
 #include <map>
+#include <vector>
 
 #include "Cluster.h"
 #include "Relation.h"
@@ -18,8 +18,7 @@ using namespace std;
 
 using Value = std::pair<vector<double>, uint>;
 
-class DBSCAN
-{
+class DBSCAN {
     Relation<double> m_points;
     double m_eps;
     uint m_minPts;
@@ -34,7 +33,7 @@ class DBSCAN
     double dist(vector<double>, vector<double>);
     vector<double> getMean(vector<int> &v);
 
-public:
+   public:
     DBSCAN(Relation<double> points, Subspace m_subspace, double eps, uint minPts, map<vector<double>, int> ids);
     ~DBSCAN();
     Subspace getSubspace();
