@@ -10,25 +10,23 @@
 
 using namespace std;
 
-int main() {
+int main()
+{
 
-    SUBCLU subclu("data.csv", 1, 70, 1);
+	SUBCLU subclu("data.csv", 1, 70, 1);
 
-    map<Subspace, vector<Cluster>> res = subclu.run();
-    
-    for(auto x : res)
-    {
-	    cout << "MAP()____________\n";
-	    for(auto y : x.second)
-	    {
-		    y.print();
-		    cout << "-------------------------------------\n";
-	    }
-	    cout << "////////////////////////////////////////////\n";
-    }
-  
+	map<Subspace, vector<Cluster>> res = subclu.run();
 
-    
+	for (auto x : res)
+	{
+		cout << "MAP()____________\n";
+		for (auto y : x.second)
+		{
+			y.print();
+			cout << "-------------------------------------\n";
+		}
+		cout << "////////////////////////////////////////////\n";
+	}
 
-    return 0;
+	return 0;
 }

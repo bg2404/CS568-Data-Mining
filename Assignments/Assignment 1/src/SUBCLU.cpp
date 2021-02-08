@@ -30,7 +30,7 @@ SUBCLU::SUBCLU(string filename, int minPts, double epsilon, int minDim)
 		this->dbids[dataBase[i]] = i;
 	}
 
-	(this -> Clusterings).clear();
+	(Clusterings).clear();
 }
 
 map<Subspace, vector<Cluster>> SUBCLU::run()
@@ -40,7 +40,7 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 	if (size <= 1)
 	{
 		cout << "Error: SUBCLU needs Multivariate Data";
-		return (this -> Clusterings);
+		return (Clusterings);
 	}
 	for (int dimension = 0; dimension < size; dimension++)
 	{
@@ -49,11 +49,11 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 		vector<Cluster> clusters = dbscan.getClusters();
 		if (!clusters.empty())
 		{
-			(this -> Clusterings).insert({currSubspace, clusters});
+			(Clusterings).insert({currSubspace, clusters});
 			subspaces.push_back(currSubspace);
 		}
 	}
-	
+
 	for (int dimensionality = 2; dimensionality <= size; dimensionality++)
 	{
 		vector<Subspace> candidates = generateSubspaceCandidates(subspaces);
@@ -63,9 +63,14 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 		{
 			Subspace bestSubspace = besttSubspace(subspaces, candidate);
 			vector<Cluster> clusters;
-
-			for (auto cluster : Clusterings[bestSubspace])
+			// cout << "*******************\n";
+			// candidate.print();
+			// bestSubspace.print();
+			// cout << "//////////////////////////\n";
+			for (auto cluster : Clusterings.find(bestSubspace)->second)
 			{
+				// cout << "here\n";
+				// cluster.print();
 				if (cluster.size() >= this->minPnts)
 				{
 					vector<Cluster> candidateClusters = runDBSCAN(candidate, cluster.getIds());
@@ -76,6 +81,7 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 					}
 				}
 			}
+			// cout << "*******************\n";
 
 			if (!clusters.empty())
 			{
@@ -112,7 +118,7 @@ vector<Subspace> SUBCLU::generateSubspaceCandidates(vector<Subspace> &subspaces)
 	{
 		for (int j = 0; j < (int)(subspaces.size()); j++)
 		{
-			if(i != j)
+			if (i != j)
 			{
 				Subspace candidate = subspaces[i].join(subspaces[j]);
 
@@ -139,17 +145,17 @@ bool SUBCLU::checkLower(Subspace &candidate, vector<Subspace> &subspaces)
 	{
 		if (candidate.hasDimension(dimension))
 		{
-			vector<int>& ref = candidateCopy.getDimensions();
+			vector<int> &ref = candidateCopy.getDimensions();
 
-			if(dimension == size - 1)
+			if (dimension == size - 1)
 				ref.pop_back();
 			else
 				ref[dimension] = 0;
 
-			if(!candidateCopy.isSubspace(candidate))
+			if (!candidateCopy.isSubspace(candidate))
 				return false;
 
-			if(dimension == size - 1)
+			if (dimension == size - 1)
 				ref.push_back(1);
 			else
 				ref[dimension] = 1;
