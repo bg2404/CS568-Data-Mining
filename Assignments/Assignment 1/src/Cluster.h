@@ -20,6 +20,9 @@ private:
     vector<double> mean;
 
 public:
+    // Cluster Count
+    static int cnt;
+
     // Constructor
     Cluster(string name, set<int> &ids, bool noise, Subspace &subspace, vector<double> &mean);
 

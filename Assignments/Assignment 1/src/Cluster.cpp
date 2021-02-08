@@ -8,6 +8,8 @@
 
 using namespace std;
 
+int Cluster::cnt = 0;
+
 Cluster::Cluster(string name, set<int>& ids, bool noise, Subspace& subspace, vector<double>& mean) {
     this->name = name;
     this->ids = ids;
