@@ -20,12 +20,19 @@ std::string trim(string s) {
 
 ReadInput::ReadInput(string file) {
     inputFile.open(file, ios::in);
+
+    if(!inputFile.is_open())
+	   cout << "404 File: " << file << " not found!!\n";
+    else
+	    cout << "Opening File: " << file << " ....\n";
 }
 
 ReadInput::~ReadInput() {
     inputFile.close();
+    cout << "Closing File.....\n";
 }
 
+// Assumption space separated File
 Relation<double> ReadInput::read() {
     Relation<double> data;
     vector<double> row;

@@ -16,9 +16,9 @@
 
 using namespace std;
 
-SUBCLU::SUBCLU(string filename, int minPts, double epsilon, int minDim)
+SUBCLU::SUBCLU(string filename, int minPnts, double epsilon, int minDim)
 {
-	this->minPnts = minPts;
+	this->minPnts = minPnts;
 	this->epsilon = epsilon;
 	this->minDim = minDim;
 
@@ -27,83 +27,97 @@ SUBCLU::SUBCLU(string filename, int minPts, double epsilon, int minDim)
 
 	for (int i = 0; i < (int)(dataBase.size()); i++)
 	{
-		this->dbids[dataBase[i]] = i;
+		(this -> dbids)[dataBase[i]] = i;
 	}
 
-	(Clusterings).clear();
+	(this -> Clusterings).clear();
 }
 
 map<Subspace, vector<Cluster>> SUBCLU::run()
 {
-	int size = dataBase[0].size();
-	vector<Subspace> subspaces;
-	if (size <= 1)
+	(this -> Clusterings).clear();
+	if((this -> dataBase).size())
 	{
-		cout << "Error: SUBCLU needs Multivariate Data";
-		return (Clusterings);
-	}
-	for (int dimension = 0; dimension < size; dimension++)
-	{
-		Subspace currSubspace(dimension);
-		DBSCAN dbscan(dataBase, currSubspace, epsilon, minPnts, dbids);
-		vector<Cluster> clusters = dbscan.getClusters();
-		if (!clusters.empty())
+		int size = (this -> dataBase)[0].size();
+
+		vector<Subspace> subspaces;
+		if (size <= 1)
 		{
-			(Clusterings).insert({currSubspace, clusters});
-			subspaces.push_back(currSubspace);
+			cout << "Error: SUBCLU needs Multivariate Data";
+			return (this -> Clusterings);
 		}
-	}
-
-	for (int dimensionality = 2; dimensionality <= size; dimensionality++)
-	{
-		vector<Subspace> candidates = generateSubspaceCandidates(subspaces);
-		vector<Subspace> sub_d;
-
-		for (Subspace candidate : candidates)
+		// 1-Dimensionality Clustering
+		for(int dimension = 0; dimension < size; dimension++)
 		{
-			Subspace bestSubspace = besttSubspace(subspaces, candidate);
-			vector<Cluster> clusters;
-			// cout << "*******************\n";
-			// candidate.print();
-			// bestSubspace.print();
-			// cout << "//////////////////////////\n";
-			for (auto cluster : Clusterings.find(bestSubspace)->second)
-			{
-				// cout << "here\n";
-				// cluster.print();
-				if (cluster.size() >= this->minPnts)
-				{
-					vector<Cluster> candidateClusters = runDBSCAN(candidate, cluster.getIds());
-					if (!candidateClusters.empty())
-					{
-						for (auto currCluster : candidateClusters)
-							clusters.push_back(currCluster);
-					}
-				}
-			}
-			// cout << "*******************\n";
+			Subspace currSubspace(dimension);
+			DBSCAN dbscan(this -> dataBase, currSubspace, this -> epsilon, this -> minPnts, this -> dbids);
 
+			vector<Cluster> clusters = dbscan.getClusters();
 			if (!clusters.empty())
 			{
-				sub_d.push_back(candidate);
-				Clusterings.insert({candidate, clusters});
+				(this -> Clusterings).insert({currSubspace, clusters});
+				subspaces.push_back(currSubspace);
 			}
 		}
 
-		subspaces = sub_d;
+		// Apriori BuildUp
+		for (int dimensionality = 2; dimensionality <= size; dimensionality++)
+		{
+			if(!subspaces.empty())
+			{
+				vector<Subspace> candidates = generateSubspaceCandidates(subspaces);
+				vector<Subspace> sub_d;
+
+				for (Subspace candidate : candidates)
+				{
+					Subspace bestSubspace = besttSubspace(subspaces, candidate);
+
+					if(!bestSubspace.isValid())
+					{
+						cout << "BestSubspace return empty subspace\n";
+					}
+
+					vector<Cluster> clusters;
+
+					
+					if((this -> Clusterings).find(bestSubspace) != (this -> Clusterings).end())
+					{
+						for (auto cluster : (((this -> Clusterings).find(bestSubspace)) -> second))
+						{
+							if (cluster.size() >= this -> minPnts)
+							{
+								vector<Cluster> candidateClusters = runDBSCAN(candidate, cluster.getIds());
+								if (!candidateClusters.empty())
+								{
+									for (auto currCluster : candidateClusters)
+										clusters.push_back(currCluster);
+								}
+							}
+						}
+					}
+					else
+						cout << "Map error again\n";
+
+					if (!clusters.empty())
+					{
+						sub_d.push_back(candidate);
+						(this -> Clusterings).insert({candidate, clusters});
+					}
+				}
+
+				subspaces = sub_d;
+			}
+			else
+				break;
+		}
+
+		return (this -> Clusterings);
 	}
-
-	// int numClusters = 0;
-	// set<int> noise;
-
-	// map<Subspace, vector<Cluster>> filtered;
-	// for (auto it = Clusterings.rbegin(); it != Clusterings.rend(); it++)
-	// {
-	//     Subspace subspace = it->first;
-	//     if (subspace.getDimensionality() < minDim)
-	//         continue;
-	// }
-	return Clusterings;
+	else
+	{
+		cout << "Empty Dataset Nothing to Cluster\n";
+		return (this -> Clusterings);
+	}
 }
 
 vector<Subspace> SUBCLU::generateSubspaceCandidates(vector<Subspace> &subspaces)
@@ -139,26 +153,16 @@ bool SUBCLU::checkLower(Subspace &candidate, vector<Subspace> &subspaces)
 	int size = candidate.getDimensions().size();
 
 	Subspace candidateCopy = candidate;
-	candidateCopy.getDimensionality()--;
-
+	
 	for (int dimension = 0; dimension < size; dimension++)
 	{
 		if (candidate.hasDimension(dimension))
 		{
-			vector<int> &ref = candidateCopy.getDimensions();
-
-			if (dimension == size - 1)
-				ref.pop_back();
-			else
-				ref[dimension] = 0;
-
-			if (!candidateCopy.isSubspace(candidate))
+			candidateCopy.removeDimension(dimension);
+			if(!candidateCopy.isSubspace(candidate))
 				return false;
-
-			if (dimension == size - 1)
-				ref.push_back(1);
-			else
-				ref[dimension] = 1;
+			candidateCopy.addDimension(dimension);
+			
 		}
 	}
 	return true;
@@ -166,33 +170,36 @@ bool SUBCLU::checkLower(Subspace &candidate, vector<Subspace> &subspaces)
 
 Subspace SUBCLU::besttSubspace(vector<Subspace> &subspaces, Subspace &candidate)
 {
-	Subspace theBest;
-	long min = (long)INT64_MAX;
-	for (Subspace subspace : subspaces)
+	if(subspaces.size())
 	{
-		if (subspace.isSubspace(candidate))
+		Subspace theBest = subspaces[0];
+		long min = (long)INT64_MAX;
+		for (Subspace subspace : subspaces)
 		{
-			int sum = 0;
-			for (Cluster cluster : Clusterings[subspace])
-				sum += cluster.size();
-			if (sum < min)
+			if (subspace.isSubspace(candidate))
 			{
-				min = sum;
-				theBest = subspace;
+				int sum = 0;
+				for (Cluster cluster : ((this -> Clusterings).find(subspace) -> second))
+					sum = sum + cluster.size();
+				if (sum < min)
+				{
+					min = sum;
+					theBest = subspace;
+				}
 			}
 		}
-	}
 
-	return theBest;
+		return theBest;
+	}
+	else
+		return Subspace();
 }
 
 vector<Cluster> SUBCLU::runDBSCAN(Subspace &currSubspace, set<int> &ids)
 {
 	Relation<double> points;
 	for (auto i : ids)
-	{
 		points.push_back(dataBase[i]);
-	}
-	DBSCAN dbscan(points, currSubspace, epsilon, minPnts, dbids);
+	DBSCAN dbscan(points, currSubspace, this -> epsilon, this -> minPnts, this -> dbids);
 	return dbscan.getClusters();
 }

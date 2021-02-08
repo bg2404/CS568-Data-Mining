@@ -19,7 +19,10 @@ protected:
     int minDim;
     Relation<double> dataBase;
 
-    map<Subspace, vector<Cluster>> Clusterings; //Should we use sets instead of vector?
+    // map subspaces to their respective clusters
+    map<Subspace, vector<Cluster>> Clusterings;
+    
+    // map instances to index
     map<vector<double>, int> dbids;
 
 public:

@@ -26,6 +26,10 @@ public:
     vector<int> &getDimensions();
     int& getDimensionality();
 
+    // Add or Remove dimensions
+    void addDimension(int dimension);
+    void removeDimension(int dimension);
+
     // Joins subspaces to create new subspace
     Subspace join(Subspace &other);
     vector<int> joinLastDimensions(Subspace &other);

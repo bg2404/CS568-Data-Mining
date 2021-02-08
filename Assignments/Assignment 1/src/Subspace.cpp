@@ -37,6 +37,57 @@ int &Subspace::getDimensionality()
     return this->dimensionality;
 }
 
+void Subspace::addDimension(int dimension)
+{
+	if(dimension < 0)
+	{
+		cout << "addDimension invalid argument < 0\n";
+		return;
+	}
+	int size = (this -> dimensions).size();
+
+	if(dimension < size)
+	{
+		if((this -> dimensions)[dimension] == 0)
+			(this -> dimensionality)++;
+
+		(this -> dimensions)[dimension] = 1;
+	}
+	else if(dimension == size)
+	{
+		(this -> dimensionality)++;
+		(this -> dimensions).push_back(1);
+	}
+	else
+	{
+		cout << "addDimension invalid argument > size\n";
+	}
+
+}
+
+void Subspace::removeDimension(int dimension)
+{
+	if(dimension < 0)
+	{
+		cout << "removeDimension invalid argument < 0\n";
+		return;
+	}
+	int size = (this -> dimensions).size();
+
+	if(dimension < size)
+	{
+		if((this -> dimensions)[dimension] == 1)
+			(this -> dimensionality)--;
+
+		if(dimension < size - 1)
+			(this -> dimensions)[dimension] = 0;
+		else
+			(this -> dimensions).pop_back();
+	}
+	else
+		cout << "removeDimension invalid argument >= size\n";
+}
+
 Subspace Subspace::join(Subspace &other)
 {
     vector<int> newDimensions = joinLastDimensions(other);
@@ -98,17 +149,17 @@ bool Subspace::isValid()
 
 bool Subspace::operator<(const Subspace &s2) const
 {
-    if (dimensionality < s2.dimensionality)
-    {
+    if ((this -> dimensionality) < s2.dimensionality)
         return true;
-    }
-    else if (dimensions.size() < s2.dimensions.size())
-    {
+    else if ((this -> dimensionality) > s2.dimensionality)
+        return false;
+    else if ((this -> dimensions).size() < s2.dimensions.size())
         return true;
-    }
+    else if((this -> dimensions).size() > s2.dimensions.size())
+	    return false;
     else
     {
-        for (int i = (int)dimensions.size() - 1; i >= 0; i--)
+        for (int i = (int)((this -> dimensions).size()) - 1; i >= 0; i--)
         {
             if ((dimensions[i] + s2.dimensions[i]) == 1)
             {
