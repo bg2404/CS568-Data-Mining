@@ -10,7 +10,8 @@ using namespace std;
 
 int Cluster::cnt = 0;
 
-Cluster::Cluster(string name, set<int>& ids, bool noise, Subspace& subspace, vector<double>& mean) {
+Cluster::Cluster(string name, set<int> &ids, bool noise, Subspace &subspace, vector<double> &mean)
+{
     this->name = name;
     this->ids = ids;
     this->noise = noise;
@@ -18,43 +19,53 @@ Cluster::Cluster(string name, set<int>& ids, bool noise, Subspace& subspace, vec
     this->mean = mean;
 }
 
-int Cluster::size() {
+int Cluster::size()
+{
     return (this->ids).size();
 }
 
-string& Cluster::getName() {
+string &Cluster::getName()
+{
     return this->name;
 }
 
-set<int>& Cluster::getIds() {
+set<int> &Cluster::getIds()
+{
     return this->ids;
 }
 
-bool Cluster::isNoise() {
+bool Cluster::isNoise()
+{
     return this->noise;
 }
 
-Subspace& Cluster::getSubspace() {
+Subspace &Cluster::getSubspace()
+{
     return this->subspace;
 }
 
-void Cluster::setName(string& name) {
+void Cluster::setName(string &name)
+{
     this->name = name;
 }
 
-void Cluster::setIds(set<int>& ids) {
+void Cluster::setIds(set<int> &ids)
+{
     this->ids = ids;
 }
 
-void Cluster::setNoise(bool noise) {
+void Cluster::setNoise(bool noise)
+{
     this->noise = noise;
 }
 
-void Cluster::setSubspace(Subspace& subspace) {
+void Cluster::setSubspace(Subspace &subspace)
+{
     this->subspace = subspace;
 }
 
-void Cluster::print() {
+void Cluster::print()
+{
     cout << "name = " << this->name << '\n';
     cout << "ids = ";
     for (auto x : this->ids)
@@ -68,6 +79,7 @@ void Cluster::print() {
     cout << '\n';
 }
 
-bool Cluster::isValid() {
+bool Cluster::isValid()
+{
     return (this->subspace).isValid() && !(this->mean).empty();
 }

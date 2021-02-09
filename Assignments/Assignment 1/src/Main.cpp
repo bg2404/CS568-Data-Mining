@@ -1,23 +1,27 @@
 #include <iostream>
 #include <set>
 #include <vector>
+#include <fstream>
 
 #include "DBSCAN.h"
 #include "Cluster.h"
 #include "ReadInput.h"
 #include "Subspace.h"
+#include "Relation.h"
 #include "SUBCLU.h"
 
 using namespace std;
 
-int main(int argc, char** argv)
+map<vector<double>, int> dbids;
+
+int main(int argc, char **argv)
 {
-	if(argc != 4)
+	if (argc != 4)
 	{
-		if(argc == 2)
+		if (argc == 2)
 		{
 			string help = argv[1];
-			if(help == "help")
+			if (help == "help")
 			{
 				cout << "min points and epsilon values that work....\n";
 				cout << "mouse.csv 12 0.05\n";
@@ -36,22 +40,69 @@ int main(int argc, char** argv)
 
 	map<Subspace, vector<Cluster>> result = subclu.run();
 
+	// for (auto x : result)
+	// {
+	// 	cout << "############################################\n";
+	// 	Subspace subspace = x.first;
+	// 	subspace.print();
+	// 	cout << "############################################\n";
+
+	// 	for (auto y : x.second)
+	// 	{
+	// 		y.print();
+	// 		cout << "-----------------------------------------------\n";
+	// 	}
+	// 	cout << "////////////////////////////////////////////\n";
+	// }
+
+	//TODO: Plotting results and testing...
+
+	//creating different files for calculation shiloutte coefficient
+
+	//total dimensions
+	int total_d = 3;
+
+	ReadInput reader(argv[1]);
+	Relation<double> dataBase = reader.read();
+
+	for (int i = 0; i < (int)(dataBase.size()); i++)
+	{
+		dbids[dataBase[i]] = i;
+	}
+
 	for (auto x : result)
 	{
-		cout << "############################################\n";
+		string file = "Subspace";
 		Subspace subspace = x.first;
-		subspace.print();
-		cout << "############################################\n";
+		for (auto d : subspace.getDimensions())
+		{
+			file.push_back((char)(d + '0'));
+		}
+		file = file + ".csv";
+
+		fstream p_file;
+		p_file.open(file, ios::out);
+
+		int label = 0;
 
 		for (auto y : x.second)
 		{
-			y.print();
-			cout << "-----------------------------------------------\n";
+			set<int> ids = y.getIds();
+			for (int id : ids)
+			{
+				for (int i = 0; i < total_d; i++)
+				{
+					if (subspace.hasDimension(i))
+					{
+						p_file << dataBase[id][i] << " ";
+					}
+				}
+				p_file << label << "\n";
+			}
+			label++;
 		}
-		cout << "////////////////////////////////////////////\n";
+		p_file.close();
 	}
-
-	//TODO: Plotting results and testing...
 
 	return 0;
 }
