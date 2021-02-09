@@ -33,4 +33,4 @@ ReadInput.o: Relation.h ReadInput.h ReadInput.h
 	$(CC) $(CFLAGS) -c ReadInput.cpp
 
 clean:
-			$(RM) $(TARGET) *.o
+			$(RM) $(TARGET) *.o Subspace*.csv
