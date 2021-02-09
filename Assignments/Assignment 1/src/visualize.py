@@ -55,11 +55,12 @@ if __name__ == '__main__':
 
     else:
         datafile_name = sys.argv[1]
+        df = pd.read_csv(sys.argv[1], sep='\s+', header=None)
 
         if datafile_name.startswith("Subspace") and len(datafile_name) > len("subspace.csv"):
             subspace = datafile_name[len("Subspace"):-4]
             names = []
-            cur_dim = 'x'
+            cur_dim = '1'
 
             for dim in subspace:
                 if dim == '1':
@@ -68,12 +69,11 @@ if __name__ == '__main__':
 
             names.append('label')
             dims = len(names)
-            df = pd.read_csv(sys.argv[1], sep='\s+', names=names)
+            df.columns = names
         else:
-            df = pd.read_csv(sys.argv[1], sep='\s+', header=None)
             dims = len(df.columns)
             names = []
-            cur_dim = 'x'
+            cur_dim = '1'
             for dim in range(dims):
                 names.append(cur_dim)
                 cur_dim = chr(ord(cur_dim) + 1)
