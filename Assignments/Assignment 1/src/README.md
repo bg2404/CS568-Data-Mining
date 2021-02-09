@@ -22,3 +22,5 @@ To **visualize** the results
 ```
       python3 visualize.py {subspace result}
 ```
+
+![alt text](https://github.com/bg2404/CS568-Data-Mining/blob/main/Assignments/Assignment%201/mouse.png)
