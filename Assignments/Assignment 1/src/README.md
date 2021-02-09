@@ -7,7 +7,7 @@ To **run**
       ./subclu {data set} {min points} {epsilon}
 ```
 
-Dependencies for testing   
+Dependencies for **testing**
 1. sklearn `pip3 install scikit-learn`
 2. numpy  `pip3 install numpy`
 3. matplotlib `pip3 install matplotlib`
