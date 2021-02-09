@@ -24,3 +24,4 @@ To **visualize** the results
 ```
 
 ![alt text](https://github.com/bg2404/CS568-Data-Mining/blob/main/Assignments/Assignment%201/mouse.png)
+Results for **mouse.csv** dataset
