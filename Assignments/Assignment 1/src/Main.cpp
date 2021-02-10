@@ -13,6 +13,7 @@
 using namespace std;
 
 map<vector<double>, int> dbids;
+map<int, int> idc;
 
 int main(int argc, char **argv)
 {
@@ -26,7 +27,7 @@ int main(int argc, char **argv)
 				cout << "min points and epsilon values that work....\n";
 				cout << "mouse.csv 12 0.05\n";
 				cout << "cube.csv  1   70\n";
-				cout << "Iris-Unlabeled.csv 2 0.5\n";
+				cout << "Iris-Unlabeled.csv 4 0.4\n";
 			}
 		}
 		cout << "Usage: ./subclu {file} {min points} {epsilon}\n";
@@ -61,7 +62,7 @@ int main(int argc, char **argv)
 	ReadInput reader(file);
 	Relation<double> dataBase = reader.read();
 
-	if(!dataBase.size())
+	if (!dataBase.size())
 		return 0;
 
 	int total_d = dataBase[0].size();
@@ -71,13 +72,21 @@ int main(int argc, char **argv)
 		dbids[dataBase[i]] = i;
 	}
 
+	Subspace ss;
+
 	for (auto x : result)
 	{
+		// bool flag = false;
 		string file = "Subspace";
 		Subspace subspace = x.first;
 		for (auto d : subspace.getDimensions())
 		{
 			file.push_back((char)(d + '0'));
+		}
+		if (file == "Subsapce1111.csv")
+		{
+			ss = subspace;
+			// flag = true;
 		}
 		file = file + ".csv";
 
@@ -91,6 +100,7 @@ int main(int argc, char **argv)
 			set<int> ids = y.getIds();
 			for (int id : ids)
 			{
+				idc[id] = label;
 				for (int i = 0; i < total_d; i++)
 				{
 					if (subspace.hasDimension(i))
@@ -105,5 +115,24 @@ int main(int argc, char **argv)
 		p_file.close();
 	}
 
+	//for confusion_matrix for Subspace1111.csv database
+	string filename = "confusion_matrix.csv";
+	fstream p_file;
+	p_file.open(filename, ios::out);
+	for (int i = 0; i < (int)(dataBase.size()); i++)
+	{
+		for (int j = 0; j < total_d; j++)
+		{
+			p_file << dataBase[i][j] << " ";
+		}
+		if (idc.find(i) != idc.end())
+		{
+			p_file << idc[i] << "\n";
+		}
+		else
+		{
+			p_file << "-1\n";
+		}
+	}
 	return 0;
 }
