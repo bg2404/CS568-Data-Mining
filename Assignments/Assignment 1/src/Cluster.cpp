@@ -71,8 +71,10 @@ void Cluster::print()
     for (auto x : this->ids)
         cout << x << ' ';
     cout << '\n';
+    /*
     cout << "noise = " << this->noise << '\n';
     (this->subspace).print();
+    */
     cout << "mean = ";
     for (auto x : this->mean)
         cout << x << ' ';

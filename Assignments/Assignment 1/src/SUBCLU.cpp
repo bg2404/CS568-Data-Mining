@@ -47,9 +47,13 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 			return (this -> Clusterings);
 		}
 		// 1-Dimensionality Clustering
+		cout << "Finding clusters in 1-D Subspaces by running DBSCAN....\n";
 		for(int dimension = 0; dimension < size; dimension++)
 		{
 			Subspace currSubspace(dimension);
+			cout << "------------------------------\n";
+			cout << "Current Subspace: \n";
+			currSubspace.print();
 			DBSCAN dbscan(this -> dataBase, currSubspace, this -> epsilon, this -> minPnts, this -> dbids);
 
 			vector<Cluster> clusters = dbscan.getClusters();
@@ -57,9 +61,14 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 			{
 				(this -> Clusterings).insert({currSubspace, clusters});
 				subspaces.push_back(currSubspace);
+				cout << "Clusters Present\n";
 			}
+			cout << "Number of Clusters: " << clusters.size() << '\n';
+
+			cout << "------------------------------\n";
 		}
 
+		cout << "Apriori Buildup starting to identify higher dimension clusters....\n";
 		// Apriori BuildUp
 		for (int dimensionality = 2; dimensionality <= size; dimensionality++)
 		{
@@ -70,6 +79,9 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 
 				for (Subspace candidate : candidates)
 				{
+					cout << "------------------------------\n";
+					cout << "Current Subspace: \n";
+					candidate.print();
 					Subspace bestSubspace = besttSubspace(subspaces, candidate);
 
 					if(!bestSubspace.isValid())
@@ -94,6 +106,7 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 								}
 							}
 						}
+
 					}
 					else
 						cout << "Map error again\n";
@@ -102,7 +115,10 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 					{
 						sub_d.push_back(candidate);
 						(this -> Clusterings).insert({candidate, clusters});
+						cout << "Clusters Present\n";
 					}
+					cout << "Number of Clusters: " << clusters.size() << '\n';
+					cout << "------------------------------\n";
 				}
 
 				subspaces = sub_d;
@@ -145,6 +161,17 @@ vector<Subspace> SUBCLU::generateSubspaceCandidates(vector<Subspace> &subspaces)
 		}
 	}
 
+	cout << "////////////////////////////////////////////////\n";
+	cout << "Candidate Subspaces: \n";
+	for(auto x : candidates)
+	{
+		for(auto y : x.getDimensions())
+			cout << y;
+		cout << ' ';
+	}
+	cout << '\n';
+	
+	cout << "////////////////////////////////////////////////\n";
 	return vector<Subspace>(candidates.begin(), candidates.end());
 }
 
@@ -188,6 +215,10 @@ Subspace SUBCLU::besttSubspace(vector<Subspace> &subspaces, Subspace &candidate)
 				}
 			}
 		}
+		cout << "Best Subspace: ";
+		for(auto x : theBest.getDimensions())
+			cout << x;
+		cout << '\n';
 
 		return theBest;
 	}

@@ -40,9 +40,12 @@ int main(int argc, char **argv)
 
 	SUBCLU subclu(file, mnPnts, epsilon);
 
+	
+	cout << "Starting SUBCLU run with file = " << file << " ,mnPnts = " << mnPnts << " ,epsilon = " << epsilon << " .....\n";
 	map<Subspace, vector<Cluster>> result = subclu.run();
 
 	// Printing Results
+	/*
 	for (auto x : result)
 	{
 		cout << "############################################\n";
@@ -57,6 +60,7 @@ int main(int argc, char **argv)
 		}
 		cout << "////////////////////////////////////////////\n";
 	}
+	*/
 
 	// Testing and Visualisation
 	ReadInput reader(file);
