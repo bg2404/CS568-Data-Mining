@@ -22,7 +22,6 @@ class INCRDBSCAN
     vector<double> m_point;
     double m_eps;
     uint m_minPts;
-    vector<Cluster> m_clusters;
     Subspace m_subspace;
     map<vector<double>, int> m_ids;
     int m_id;
@@ -31,7 +30,7 @@ class INCRDBSCAN
     double dist(vector<double>, vector<double>);
 
     public:
-    INCRDBSCAN(vector<double> point, double eps,uint minPts,Relation<double> points, vector<Cluster> clusters,Subspace subspace, int id);
-    vector<Cluster> Insert();
+    INCRDBSCAN(vector<double> point, double eps,uint minPts,Relation<double> points,Subspace &subspace, int id);
+    Subspace Insert();
 };
 #endif

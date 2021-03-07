@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include "Cluster.h"
 
 #include "BitsUtil.h"
 
@@ -179,7 +180,37 @@ void Subspace::set_counts(map<int,pair<int,int>> counts)
     this->counts = counts;
 }
 
+void Subspace::set_Clusters(vector<Cluster> clustering)
+{
+    clusters.clear();
+    counts.clear();
+    int i=0;
+    for(auto cluster:clustering)
+    {
+        set<int> ids = cluster.getIds();
+        if(ids.size()>0){
+            for(int i: ids)
+            {
+                counts.insert(make_pair(i,make_pair(0,i)));
+            }
+            clusters.insert(make_pair(i,cluster));
+            i++;
+        }
+    }
+}
+
+void Subspace:: set_Clusters_Counts(map<int,Cluster> clusters,map<int,pair<int,int>> counts)
+{
+    this->clusters = clusters;
+    this->counts = counts;
+}
+
 map<int,pair<int,int>> Subspace::get_counts()
 {
     return counts;
+}
+
+map<int,Cluster> Subspace:: get_Clusters()
+{
+    return clusters;
 }

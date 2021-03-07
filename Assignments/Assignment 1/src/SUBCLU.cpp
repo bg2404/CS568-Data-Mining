@@ -61,6 +61,7 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 			{
 				(this -> Clusterings).insert({currSubspace, clusters});
 				subspaces.push_back(currSubspace);
+				currSubspace.set_Clusters(clusters);
 				cout << "Clusters Present\n";
 			}
 			cout << "Number of Clusters: " << clusters.size() << '\n';
@@ -115,6 +116,7 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 					{
 						sub_d.push_back(candidate);
 						(this -> Clusterings).insert({candidate, clusters});
+						candidate.set_Clusters(clusters);
 						cout << "Clusters Present\n";
 					}
 					cout << "Number of Clusters: " << clusters.size() << '\n';

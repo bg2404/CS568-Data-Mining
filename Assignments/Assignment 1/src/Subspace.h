@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include "Cluster.h"
 
 using namespace std;
 
@@ -13,6 +14,7 @@ private:
     vector<int> dimensions;
     int dimensionality;
     map<int,pair<int,int>> counts;
+    map<int,Cluster> clusters;
 
 public:
     // Create a 1-dimensional subspace
@@ -54,6 +56,13 @@ public:
 
     //return counts
     map<int,pair<int,int>> get_counts();
+
+    //set clusters
+    void set_Clusters(vector<Cluster> clustering);
+
+    void set_Clusters_Counts(map<int,Cluster> clusters,map<int,pair<int,int>> counts);
+
+    map<int,Cluster> get_Clusters();
 };
 
 #endif
