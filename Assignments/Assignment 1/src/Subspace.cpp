@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include "BitsUtil.h"
 
@@ -171,4 +172,14 @@ bool Subspace::operator<(const Subspace &s2) const
         }
     }
     return false;
+}
+
+void Subspace::set_counts(map<int,pair<int,int>> counts)
+{
+    this->counts = counts;
+}
+
+map<int,pair<int,int>> Subspace::get_counts()
+{
+    return counts;
 }

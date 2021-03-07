@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -11,6 +12,7 @@ class Subspace
 private:
     vector<int> dimensions;
     int dimensionality;
+    map<int,pair<int,int>> counts;
 
 public:
     // Create a 1-dimensional subspace
@@ -46,6 +48,12 @@ public:
 
     //defining < operator
     bool operator<(const Subspace &s2) const;
+
+    //set map counts
+    void set_counts(map<int,pair<int,int>> counts);
+
+    //return counts
+    map<int,pair<int,int>> get_counts();
 };
 
 #endif
