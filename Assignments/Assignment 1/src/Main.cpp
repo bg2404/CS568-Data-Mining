@@ -101,7 +101,10 @@ int main(int argc, char **argv)
 
 		for (auto y : x.second)
 		{
-			set<int> ids = y.getIds();
+			set<pair<int, int>> idPairs = y.getIds();
+			set<int> ids; 
+			for(auto x : idPairs)
+				ids.insert(x.first);
 			for (int id : ids)
 			{
 				idc[id] = label;

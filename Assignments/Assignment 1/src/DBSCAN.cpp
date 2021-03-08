@@ -56,7 +56,9 @@ vector<Cluster> DBSCAN::getClusters()
 	{
 		int clusterID = 1;
 		m_clusterIDs.resize(m_numPoints, UNCLASSIFIED);
-		for (uint i = 0; i < m_numPoints; ++i) 
+		m_neighCounts.resize(m_numPoints, 0);
+
+		for(uint i = 0; i < m_numPoints; ++i) 
 		{
 			if (m_clusterIDs[i] == UNCLASSIFIED) 
 			{
@@ -66,31 +68,44 @@ vector<Cluster> DBSCAN::getClusters()
 				}
 			}
 		}
-		if (clusterID > 1) 
-		{
+
+		//if (clusterID > 1) 
+		//{
 			--clusterID;
 			int dim = m_points[0].size();
-			vector<vector<int>> cluster_ids(clusterID);
-			vector<vector<double>> mean(clusterID, vector<double>(dim, 0));
+			vector<vector<pair<int, int>>> cluster_ids(clusterID + 1);
+			vector<vector<double>> mean(clusterID + 1, vector<double>(dim, 0));
 
 			for (int i = 0; i < (int)m_numPoints; ++i) 
 			{
 				if (m_clusterIDs[i] - 1 >= 0) 
 				{
-					cluster_ids[m_clusterIDs[i] - 1].push_back(m_ids[m_points[i]]);
+					cluster_ids[m_clusterIDs[i] - 1].push_back(make_pair(m_ids[m_points[i]], m_neighCounts[i]));
 					for (int j = 0; j < dim; ++j)
 						mean[m_clusterIDs[i] - 1][j] += m_points[i][j];
 				}
+				else
+				{
+					assert(m_clusterIDs[i] == -2);
+					cluster_ids[clusterID].push_back(make_pair(m_ids[m_points[i]], m_neighCounts[i]));
+					for(int j = 0; j < dim; ++j)
+						mean[clusterID][j] += m_points[i][j];
+
+				}
 			}
-			for (int i = 0; i < clusterID; ++i) 
+			
+			for (int i = 0; i <= clusterID; ++i) 
 			{
-				set<int> s(cluster_ids[i].begin(), cluster_ids[i].end());
+				set<pair<int, int>> s(cluster_ids[i].begin(), cluster_ids[i].end());
+
 				for (int j = 0; j < dim; ++j)
 					mean[i][j] /= cluster_ids[i].size();
-				Cluster cluster("Cluster_" + to_string((Cluster::cnt)++), s, false, m_subspace, mean[i]);
+
+				(Cluster::cnt)++;
+				Cluster cluster("Cluster_" + to_string(Cluster::cnt), s, (i == clusterID), Cluster::cnt, mean[i]);
 				m_clusters.push_back(cluster);
 			}
-		}
+		//}
 	}
 	return m_clusters;
 }
@@ -98,6 +113,8 @@ vector<Cluster> DBSCAN::getClusters()
 int DBSCAN::expandCuster(int idx, uint clusterID) 
 {
 	vector<int> seeds = rangeQuery(m_points[idx]);
+	m_neighCounts[idx] = seeds.size();
+
 	if (seeds.size() < m_minPts) 
 	{
 		m_clusterIDs[idx] = NOISE;
@@ -119,6 +136,8 @@ int DBSCAN::expandCuster(int idx, uint clusterID)
 		{
 			int currentP = qseeds.front();
 			vector<int> result = rangeQuery(m_points[currentP]);
+			m_neighCounts[currentP] = result.size();
+
 			if (result.size() >= m_minPts) 
 			{
 				for (int resultP : result) 

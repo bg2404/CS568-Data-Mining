@@ -4,8 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include "Cluster.h"
 
+#include "Cluster.h"
 #include "BitsUtil.h"
 
 using namespace std;
@@ -175,42 +175,43 @@ bool Subspace::operator<(const Subspace &s2) const
     return false;
 }
 
-void Subspace::set_counts(map<int,pair<int,int>> counts)
-{
-    this->counts = counts;
-}
 
-void Subspace::set_Clusters(vector<Cluster> clustering)
+void Subspace::setClusters(vector<Cluster>& clustering)
 {
-    clusters.clear();
-    counts.clear();
-    int i=0;
-    for(auto cluster:clustering)
+    (this -> clusters).clear();
+    (this -> neighCounts).clear();
+
+    for(auto cluster : clustering)
     {
-        set<int> ids = cluster.getIds();
-        if(ids.size()>0){
-            for(int i: ids)
-            {
-                counts.insert(make_pair(i,make_pair(0,i)));
-            }
-            clusters.insert(make_pair(i,cluster));
-            i++;
+        set<pair<int, int>> ids = cluster.getIds();
+	int id = cluster.getId();
+
+        if(ids.size())
+	{
+            for(pair<int, int> point: ids)
+                neighCounts.insert(make_pair(point.first ,make_pair(point.second, id)));
+
+            clusters.insert(make_pair(id,cluster));
         }
     }
 }
 
-void Subspace:: set_Clusters_Counts(map<int,Cluster> clusters,map<int,pair<int,int>> counts)
+void Subspace::setClusters(map<int, Cluster>& clusters)
 {
-    this->clusters = clusters;
-    this->counts = counts;
+	(this -> clusters) = clusters;
 }
 
-map<int,pair<int,int>> Subspace::get_counts()
+void Subspace::setNeighCounts(map<int,pair<int,int>>& neighCounts)
 {
-    return counts;
+    this -> neighCounts = neighCounts;
 }
 
-map<int,Cluster> Subspace:: get_Clusters()
+map<int,pair<int,int>>& Subspace::getNeighcounts()
 {
-    return clusters;
+    return (this -> neighCounts);
+}
+
+map<int,Cluster>& Subspace:: getClusters()
+{
+    return (this -> clusters);
 }

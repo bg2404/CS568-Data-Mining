@@ -23,6 +23,7 @@ class DBSCAN {
     double m_eps;
     uint m_minPts;
     vector<int> m_clusterIDs;
+    vector<int> m_neighCounts;
     vector<Cluster> m_clusters;
     uint m_numPoints;
     Subspace m_subspace;

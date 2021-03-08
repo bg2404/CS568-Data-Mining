@@ -13,7 +13,7 @@ class Subspace
 private:
     vector<int> dimensions;
     int dimensionality;
-    map<int,pair<int,int>> counts;
+    map<int,pair<int,int>> neighCounts;
     map<int,Cluster> clusters;
 
 public:
@@ -51,18 +51,13 @@ public:
     //defining < operator
     bool operator<(const Subspace &s2) const;
 
-    //set map counts
-    void set_counts(map<int,pair<int,int>> counts);
+    // Getters and Setters
+    map<int,pair<int,int>>& getNeighcounts();
+    map<int,Cluster>& getClusters();
+    void setNeighCounts(map<int,pair<int,int>>& neighCounts);
+    void setClusters(map<int, Cluster>& clusters);
 
-    //return counts
-    map<int,pair<int,int>> get_counts();
-
-    //set clusters
-    void set_Clusters(vector<Cluster> clustering);
-
-    void set_Clusters_Counts(map<int,Cluster> clusters,map<int,pair<int,int>> counts);
-
-    map<int,Cluster> get_Clusters();
+    void setClusters(vector<Cluster>& clustering);
 };
 
 #endif

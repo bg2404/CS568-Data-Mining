@@ -61,7 +61,7 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 			{
 				(this -> Clusterings).insert({currSubspace, clusters});
 				subspaces.push_back(currSubspace);
-				currSubspace.set_Clusters(clusters);
+				currSubspace.setClusters(clusters);
 				cout << "Clusters Present\n";
 			}
 			cout << "Number of Clusters: " << clusters.size() << '\n';
@@ -99,8 +99,13 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 						{
 							if (cluster.size() >= this -> minPnts)
 							{
-								vector<Cluster> candidateClusters = runDBSCAN(candidate, cluster.getIds());
-								if (!candidateClusters.empty())
+								set<pair<int, int>> idPairs = cluster.getIds();
+								set<int> ids;
+								for(auto x : idPairs)
+									ids.insert(x.first);
+								vector<Cluster> candidateClusters = runDBSCAN(candidate, ids); 
+
+								if (!(candidateClusters.size() == 1 && candidateClusters.front().isNoise()))
 								{
 									for (auto currCluster : candidateClusters)
 										clusters.push_back(currCluster);
@@ -116,7 +121,7 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 					{
 						sub_d.push_back(candidate);
 						(this -> Clusterings).insert({candidate, clusters});
-						candidate.set_Clusters(clusters);
+						candidate.setClusters(clusters);
 						cout << "Clusters Present\n";
 					}
 					cout << "Number of Clusters: " << clusters.size() << '\n';
