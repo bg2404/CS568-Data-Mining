@@ -96,7 +96,7 @@ vector<Cluster> DBSCAN::getClusters()
 			
 			for (int i = 0; i <= clusterID; ++i) 
 			{
-				set<pair<int, int>> s(cluster_ids[i].begin(), cluster_ids[i].end());
+				map<int, int> s(cluster_ids[i].begin(), cluster_ids[i].end());
 
 				for (int j = 0; j < dim; ++j)
 					mean[i][j] /= cluster_ids[i].size();

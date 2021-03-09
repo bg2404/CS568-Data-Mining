@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 
 		for (auto y : x.second)
 		{
-			set<pair<int, int>> idPairs = y.getIds();
+			map<int, int> idPairs = y.getIds();
 			set<int> ids; 
 			for(auto x : idPairs)
 				ids.insert(x.first);

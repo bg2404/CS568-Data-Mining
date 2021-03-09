@@ -39,6 +39,11 @@ int &Subspace::getDimensionality()
     return this->dimensionality;
 }
 
+map<int, Cluster>& Subspace:: getClusters()
+{
+    return (this -> clusters);
+}
+
 void Subspace::addDimension(int dimension)
 {
 	if(dimension < 0)
@@ -146,7 +151,7 @@ void Subspace::print()
     {
         cout<<"Cluster"<<it.first<<" ";
         Cluster cluster = it.second;
-        set<pair<int,int>> ids = cluster.getIds();
+        map<int,int> ids = cluster.getIds();
         cout<<"Is Noise:"<<cluster.isNoise()<<"\n";
         for(pair<int,int> point: ids)
         {
@@ -189,24 +194,15 @@ bool Subspace::operator<(const Subspace &s2) const
 
 void Subspace::setClusters(vector<Cluster>& clustering)
 {
-    (this -> clusters).clear();
-    (this -> neighCounts).clear();
+    map<int, Cluster> clusters;
 
     for(auto cluster : clustering)
     {
-        set<pair<int, int>> ids = cluster.getIds();
-	int id = cluster.getId();
-
-        if(ids.size())
-	{
-            for(pair<int, int> point: ids)
-                neighCounts.insert(make_pair(point.first ,make_pair(point.second, id)));
-
-            clusters[id] = cluster;
-        }
+	    int clusterId = cluster.getClusterId();
+	    clusters.insert(make_pair(clusterId, cluster));
     }
 
-    next_cluster = clustering.size()+1;
+    (this -> clusters) = clusters;
 }
 
 void Subspace::setClusters(map<int, Cluster>& clusters)
@@ -214,27 +210,22 @@ void Subspace::setClusters(map<int, Cluster>& clusters)
 	(this -> clusters) = clusters;
 }
 
-void Subspace::setNeighCounts(map<int,pair<int,int>>& neighCounts)
+void Subspace::insertCluster(Cluster cluster)
 {
-    this -> neighCounts = neighCounts;
+	(this -> clusters).insert(make_pair(cluster.getClusterId(), cluster));
 }
 
-map<int,pair<int,int>>& Subspace::getNeighcounts()
+void Subspace::deleteCluster(int clusterId)
 {
-    return (this -> neighCounts);
+	(this -> clusters).erase(clusterId);
 }
 
-map<int,class Cluster>& Subspace:: getClusters()
+int Subspace::getNoiseClusterId()
 {
-    return (this -> clusters);
-}
-
-void Subspace::incrNext()
-{
-    this->next_cluster++;
-}
-
-int Subspace::getNext()
-{
-    return next_cluster;
+	for(auto cluster: (this -> clusters))
+	{
+		if(cluster.second.isNoise())
+			return cluster.first;
+	}
+	return -1;
 }

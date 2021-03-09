@@ -99,7 +99,7 @@ map<Subspace, vector<Cluster>> SUBCLU::run()
 						{
 							if (cluster.size() >= this -> minPnts)
 							{
-								set<pair<int, int>> idPairs = cluster.getIds();
+								map<int, int> idPairs = cluster.getIds();
 								set<int> ids;
 								for(auto x : idPairs)
 									ids.insert(x.first);

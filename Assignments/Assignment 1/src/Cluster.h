@@ -3,49 +3,55 @@
 
 #include <iostream>
 #include <set>
+#include <map>
 #include <cstdlib>
 #include <vector>
 using namespace std;
 
 class Cluster
 {
-private:
-    string name = "";
-    int id;
-    set<pair<int,int>> ids;
-    bool noise = false;
-    vector<double> mean;
+	private:
+		string name = "";
+		int clusterId;
+		map<int,int> ids;
+		bool noise = false;
+		vector<double> mean;
 
-public:
-    // Cluster Count
-    static int cnt;
+	public:
+		// Cluster Count
+		static int cnt;
 
-    // Constructor
-    Cluster(string name, set<pair<int, int>> &ids, bool noise, int id, vector<double> &mean);
-    Cluster();
+		// Constructor
+		Cluster(string name, map<int, int>& ids, bool noise, int clusterId, vector<double> &mean);
+		Cluster(const Cluster &t);
+		Cluster();
 
-    // Returns the number of ids inside the cluster
-    int size();
+		// Returns the number of ids inside the cluster
+		int size();
 
-    // Getters
-    string &getName();
-    int getId();
-    set<pair<int, int>> &getIds();
-    bool isNoise();
+		// Getters
+		string &getName();
+		int getClusterId();
+		map<int,int> &getIds();
+		bool isNoise();
+		vector<int> getIdKeys();
 
-    // Setters
-    void setName(string &name);
-    void setId(int id);
-    void setIds(set<pair<int, int>> &ids);
-    void setNoise(bool noise);
+		// Setters
+		void setName(string &name);
+		void setClusterId(int clusterId);
+		void setIds(map<int, int>&ids);
+		void setNoise(bool noise);
 
-    // Displays the Cluster details
-    void print();
+		// Displays the Cluster details
+		void print();
 
-    //assignment operator
-    Cluster & operator = (const Cluster &t); 
-    // copy constructor
-    Cluster(const Cluster &t);
+		//assignment operator
+		Cluster & operator = (const Cluster &t); 
+
+		//helper functions
+		void insertId(int id, int neighCount);
+		void deleteId(int id);
+
 };
 
 #endif

@@ -13,9 +13,7 @@ class Subspace
 private:
     vector<int> dimensions;
     int dimensionality;
-    map<int,pair<int,int>> neighCounts;
-    map<int,class Cluster> clusters;
-    int next_cluster;
+    map<int, Cluster> clusters;
 
 public:
     // Create a 1-dimensional subspace
@@ -30,6 +28,7 @@ public:
     // Getters
     vector<int> &getDimensions();
     int& getDimensionality();
+    map<int, Cluster>& getClusters();
 
     // Add or Remove dimensions
     void addDimension(int dimension);
@@ -52,17 +51,14 @@ public:
     //defining < operator
     bool operator<(const Subspace &s2) const;
 
-    // Getters and Setters
-    map<int,pair<int,int>>& getNeighcounts();
-    map<int,class Cluster>& getClusters();
-    void setNeighCounts(map<int,pair<int,int>>& neighCounts);
+    //Setters
     void setClusters(map<int, Cluster>& clusters);
-
     void setClusters(vector<Cluster>& clustering);
 
-    void incrNext();
 
-    int getNext();
+    void insertCluster(Cluster cluster);
+    void deleteCluster(int clusterId);
+    int getNoiseClusterId();
 };
 
 #endif
