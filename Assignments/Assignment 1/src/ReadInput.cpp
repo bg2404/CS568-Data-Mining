@@ -41,7 +41,6 @@ Relation<double> ReadInput::read() {
     while (inputFile) {
         //read a line
         getline(inputFile, line);
-
         //trim left and right
         line = trim(line);
 
@@ -60,5 +59,6 @@ Relation<double> ReadInput::read() {
         data.push_back(row);
         row.clear();
     }
+    data.pop_back();
     return data;
 }

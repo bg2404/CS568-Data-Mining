@@ -144,10 +144,10 @@ void Subspace::print()
     cout << '\n';
     for(auto it : clusters)
     {
-        cout<<it.first<<" ";
+        cout<<"Cluster"<<it.first<<" ";
         Cluster cluster = it.second;
         set<pair<int,int>> ids = cluster.getIds();
-        cout<<cluster.isNoise()<<"\n";
+        cout<<"Is Noise:"<<cluster.isNoise()<<"\n";
         for(pair<int,int> point: ids)
         {
             cout<<point.first<<" "<<point.second<<"\n";
@@ -206,7 +206,7 @@ void Subspace::setClusters(vector<Cluster>& clustering)
         }
     }
 
-    next_cluster = clustering.size();
+    next_cluster = clustering.size()+1;
 }
 
 void Subspace::setClusters(map<int, Cluster>& clusters)
@@ -231,7 +231,7 @@ map<int,class Cluster>& Subspace:: getClusters()
 
 void Subspace::incrNext()
 {
-    next_cluster++;
+    this->next_cluster++;
 }
 
 int Subspace::getNext()

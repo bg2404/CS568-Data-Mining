@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 	ReadInput reader(file);
 	dataBase = reader.read();
 
-    //generating dbids
+    // generating dbids
     for (int i = 0; i < (int)(dataBase.size()); i++)
 	{
 		dbids[dataBase[i]] = i;
@@ -45,21 +45,21 @@ int main(int argc, char **argv)
     subspace.setClusters(clustering);
     subspace.print();
 
-    // //get points to add
-    // Relation<double> AddPoints;
-    // ReadInput reader(file_incr);
-    // AddPoints = reader.read();
-    // int id = dataBase.size();
+    //get points to add
+    Relation<double> AddPoints;
+    ReadInput reader2(file_incr);
+    AddPoints = reader2.read();
+    int id = dataBase.size();
 
-    // //for each point call IncrDBSCAN
-    // for(vector<double> point : AddPoints)
-    // {
-    //     INCRDBSCAN incrdbscan = INCRDBSCAN(point,epsilon,mnPnts,dataBase,subspace,id);
-    //     subspace = incrdbscan.Insert();
-    //     dataBase.push_back(point);
-    //     dbids.insert(make_pair(point,id));
-    //     id++;
-    //     subspace.print();
-    // }
-
+    //for each point call IncrDBSCAN
+    for(int i=0;i<AddPoints.size();i++)
+    {
+        vector<double> point = AddPoints[i];
+        INCRDBSCAN incrdbscan = INCRDBSCAN(point,epsilon,mnPnts,dataBase,subspace,id,dbids);
+        subspace = incrdbscan.Insert();
+        dataBase.push_back(point);
+        dbids.insert(make_pair(point,id));
+        id++;
+        subspace.print();
+    }    
 }

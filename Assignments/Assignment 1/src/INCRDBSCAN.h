@@ -30,7 +30,7 @@ class INCRDBSCAN
     double dist(vector<double>, vector<double>);
 
     public:
-    INCRDBSCAN(vector<double> point, double eps,uint minPts,Relation<double> points,Subspace &subspace, int id);
+    INCRDBSCAN(vector<double> point, double eps,uint minPts,Relation<double> points,Subspace &subspace, int id,map<vector<double>,int> ids);
     Subspace Insert();
 };
 #endif

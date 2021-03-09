@@ -15,7 +15,7 @@
 
 using namespace std;
 
-INCRDBSCAN::INCRDBSCAN(vector<double> point, double eps,uint minPts,Relation<double> points,Subspace &subspace, int id)
+INCRDBSCAN::INCRDBSCAN(vector<double> point, double eps,uint minPts,Relation<double> points,Subspace &subspace, int id,map<vector<double>,int> ids)
 {
     m_point = point;
     m_eps = eps;
@@ -23,6 +23,7 @@ INCRDBSCAN::INCRDBSCAN(vector<double> point, double eps,uint minPts,Relation<dou
     m_points = points;
     m_subspace = subspace;
     m_id = id;
+    m_ids = ids;
 }
 
 Subspace INCRDBSCAN::Insert()
@@ -65,7 +66,7 @@ Subspace INCRDBSCAN::Insert()
 
         //add noise to subspace
         clusters[Cid] = cluster;
-        counts.insert(make_pair(m_id,make_pair(epsilon_neighbourhood.size(),clusters.size()-1)));
+        counts.insert(make_pair(m_id,make_pair(epsilon_neighbourhood.size(),Cid)));
         m_subspace.setClusters(clusters);
         m_subspace.setNeighCounts(counts);
     }
