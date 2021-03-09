@@ -14,7 +14,7 @@ private:
     vector<int> dimensions;
     int dimensionality;
     map<int,pair<int,int>> neighCounts;
-    map<int,Cluster> clusters;
+    map<int,class Cluster> clusters;
     int next_cluster;
 
 public:
@@ -54,7 +54,7 @@ public:
 
     // Getters and Setters
     map<int,pair<int,int>>& getNeighcounts();
-    map<int,Cluster>& getClusters();
+    map<int,class Cluster>& getClusters();
     void setNeighCounts(map<int,pair<int,int>>& neighCounts);
     void setClusters(map<int, Cluster>& clusters);
 

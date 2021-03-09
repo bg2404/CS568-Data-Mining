@@ -22,6 +22,7 @@ public:
 
     // Constructor
     Cluster(string name, set<pair<int, int>> &ids, bool noise, int id, vector<double> &mean);
+    Cluster();
 
     // Returns the number of ids inside the cluster
     int size();
@@ -40,6 +41,11 @@ public:
 
     // Displays the Cluster details
     void print();
+
+    //assignment operator
+    Cluster & operator = (const Cluster &t); 
+    // copy constructor
+    Cluster(const Cluster &t);
 };
 
 #endif

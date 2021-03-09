@@ -8,7 +8,6 @@
 #include <queue>
 #include <set>
 #include <vector>
-#include <stdlib.h>
 
 #include "Cluster.h"
 #include "Relation.h"
@@ -34,7 +33,7 @@ Subspace INCRDBSCAN::Insert()
 
     //increment count of each by 1
     map<int,pair<int,int>> counts = m_subspace.getNeighcounts();
-    map<int,Cluster> clusters = m_subspace.getClusters();
+    map<int,class Cluster> clusters = m_subspace.getClusters();
 
     //increment count in epsilon neighbourhood 
     for(int i:epsilon_neighbourhood)
@@ -65,7 +64,7 @@ Subspace INCRDBSCAN::Insert()
         m_subspace.incrNext();
 
         //add noise to subspace
-        clusters.insert(make_pair(Cid,cluster));
+        clusters[Cid] = cluster;
         counts.insert(make_pair(m_id,make_pair(epsilon_neighbourhood.size(),clusters.size()-1)));
         m_subspace.setClusters(clusters);
         m_subspace.setNeighCounts(counts);
@@ -118,7 +117,7 @@ Subspace INCRDBSCAN::Insert()
             Cluster cluster = Cluster("New Cluster",noise,false,Cid,mean);
 
             // add new cluster to subspace
-            clusters.insert(make_pair(Cid,cluster));
+            clusters[Cid] = cluster;
             for(pair<int,int> i:noise)
             {
                 clusters.erase(counts[i.first].second);

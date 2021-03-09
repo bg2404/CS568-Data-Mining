@@ -77,3 +77,30 @@ void Cluster::print()
         cout << x << ' ';
     cout << '\n';
 }
+
+Cluster & Cluster::operator = (const Cluster &t) 
+{
+    if(this != &t)
+    {
+        this->name = t.name;
+        this->ids = t.ids;
+        this->id = t.id;
+        this->noise = t.noise;
+        this->mean = t.mean;
+    }
+    return *this;
+}
+
+Cluster::Cluster(const Cluster &t)
+{
+    name = t.name;
+    ids = t.ids;
+    id = t.id;
+    noise = t.noise;
+    mean = t.mean;
+}
+
+Cluster::Cluster()
+{
+    
+}

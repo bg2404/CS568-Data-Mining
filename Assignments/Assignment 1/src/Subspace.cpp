@@ -142,6 +142,17 @@ void Subspace::print()
     for (auto x : this->dimensions)
         cout << x;
     cout << '\n';
+    for(auto it : clusters)
+    {
+        cout<<it.first<<" ";
+        Cluster cluster = it.second;
+        set<pair<int,int>> ids = cluster.getIds();
+        cout<<cluster.isNoise()<<"\n";
+        for(pair<int,int> point: ids)
+        {
+            cout<<point.first<<" "<<point.second<<"\n";
+        }
+    }
 }
 
 bool Subspace::isValid()
@@ -191,7 +202,7 @@ void Subspace::setClusters(vector<Cluster>& clustering)
             for(pair<int, int> point: ids)
                 neighCounts.insert(make_pair(point.first ,make_pair(point.second, id)));
 
-            clusters.insert(make_pair(id,cluster));
+            clusters[id] = cluster;
         }
     }
 
@@ -213,7 +224,7 @@ map<int,pair<int,int>>& Subspace::getNeighcounts()
     return (this -> neighCounts);
 }
 
-map<int,Cluster>& Subspace:: getClusters()
+map<int,class Cluster>& Subspace:: getClusters()
 {
     return (this -> clusters);
 }
