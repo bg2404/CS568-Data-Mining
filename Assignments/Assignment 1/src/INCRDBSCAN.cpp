@@ -33,8 +33,8 @@ Subspace INCRDBSCAN::Insert()
     vector<int> epsilon_neighbourhood = get_neighbourhood(m_point);
 
     //increment count of each by 1
-    map<int,pair<int,int>> counts = m_subspace.get_counts();
-    map<int,Cluster> clusters = m_subspace.get_Clusters();
+    map<int,pair<int,int>> counts = m_subspace.getNeighcounts();
+    map<int,Cluster> clusters = m_subspace.getClusters();
 
     //increment count in epsilon neighbourhood 
     for(int i:epsilon_neighbourhood)
@@ -42,6 +42,11 @@ Subspace INCRDBSCAN::Insert()
         pair<int,int> c = counts[i];
         c.first = c.first+1;
         counts[i] = c;
+        set<pair<int,int>> ids = clusters[c.second].getIds();
+        ids.erase(make_pair(i,c.first-1));
+        ids.insert(make_pair(i,c.first));
+        clusters[c.second].setIds(ids);
+
         if(c.first>=m_minPts)
         {
             core_p = true;
@@ -52,15 +57,18 @@ Subspace INCRDBSCAN::Insert()
     if(!core_p)
     {
         //Create noise new clulster
-        set<int> ids;
-        ids.insert(m_id);
+        set<pair<int,int>> ids;
+        ids.insert(make_pair(m_id,epsilon_neighbourhood.size()));
         string name = "New Cluster";
-        Cluster cluster = Cluster(name,ids,true,m_subspace,m_point);
+        int Cid = m_subspace.getNext();
+        Cluster cluster = Cluster(name,ids,true,Cid,m_point);
+        m_subspace.incrNext();
 
         //add noise to subspace
-        clusters.insert(make_pair(cluster.size(),cluster));
+        clusters.insert(make_pair(Cid,cluster));
         counts.insert(make_pair(m_id,make_pair(epsilon_neighbourhood.size(),clusters.size()-1)));
-        m_subspace.set_Clusters_Counts(clusters,counts);
+        m_subspace.setClusters(clusters);
+        m_subspace.setNeighCounts(counts);
     }
     //case2
     else 
@@ -83,21 +91,21 @@ Subspace INCRDBSCAN::Insert()
         if(cluster_core==0 && noise_core>0)
         {
             //find all noise points and calculate mean
-            set<int> noise;
+            set<pair<int,int>> noise;
             int dim = m_subspace.getDimensionality();
             vector<double> mean(dim,0);
             for(int i: epsilon_neighbourhood)
             {
                 if(clusters[counts[i].second].isNoise())
                 {
-                    noise.insert(i);
+                    noise.insert(make_pair(i,counts[i].first));
                     for(int j=0;j<dim;j++)
                     {
                         mean[j]+=m_points[i][j];
                     }
                 }
             }
-            noise.insert(m_id);
+            noise.insert(make_pair(m_id,epsilon_neighbourhood.size()));
             for(int j=0;j<dim;j++)
             {
                 mean[j]+=m_point[j];
@@ -105,18 +113,20 @@ Subspace INCRDBSCAN::Insert()
             }
 
             //Crreate new cluster of points
-            Cluster cluster = Cluster("New Cluster",noise,false,m_subspace,mean);
-            int Cid = clusters.size();
+            int Cid = m_subspace.getNext();
+            m_subspace.incrNext();
+            Cluster cluster = Cluster("New Cluster",noise,false,Cid,mean);
 
             // add new cluster to subspace
             clusters.insert(make_pair(Cid,cluster));
-            for(int i:noise)
+            for(pair<int,int> i:noise)
             {
-                clusters.erase(counts[i].second);
-                counts[i].second = Cid;
+                clusters.erase(counts[i.first].second);
+                counts[i.first].second = Cid;
             }
             counts.insert(make_pair(m_id,make_pair(epsilon_neighbourhood.size(),Cid)));
-            m_subspace.set_Clusters_Counts(clusters,counts);
+            m_subspace.setClusters(clusters);
+            m_subspace.setNeighCounts(counts);
         }
         else if(cluster_core>0) 
         {
@@ -135,10 +145,10 @@ Subspace INCRDBSCAN::Insert()
                 //obtain the cluster
                 int Cid = *cluster_count.begin();
                 Cluster cluster = clusters[Cid];
-                set<int> ids = cluster.getIds();
+                set<pair<int,int>> ids = cluster.getIds();
 
                 //add point to cluster
-                ids.insert(m_id);
+                ids.insert(make_pair(m_id,epsilon_neighbourhood.size()));
                 cluster.setIds(ids);
                 counts.insert(make_pair(m_id,make_pair(epsilon_neighbourhood.size(),Cid)));
 
@@ -149,7 +159,7 @@ Subspace INCRDBSCAN::Insert()
                     {
                         if(clusters[counts[i].second].isNoise())
                         {
-                            ids.insert(i);
+                            ids.insert(make_pair(i,counts[i].first));
                             clusters.erase(counts[i].second);
                             counts[i].second = Cid;
                         }
@@ -158,9 +168,10 @@ Subspace INCRDBSCAN::Insert()
                     cluster.setIds(ids);
                 }
 
-                //add cluster to subspace
+                //add chnaged cluster cluster to subspace
                 clusters[Cid] = cluster;
-                m_subspace.set_Clusters_Counts(clusters,counts);
+                m_subspace.setClusters(clusters);
+                m_subspace.setNeighCounts(counts);
 
             }
             //case 2.3 Merge Clusters or add to random cluster
@@ -172,28 +183,30 @@ Subspace INCRDBSCAN::Insert()
                     
                     //add point to the cluster
                     counts.insert(make_pair(m_id,make_pair(epsilon_neighbourhood.size(),Cid)));
-                    set<int> ids = clusters[Cid].getIds();
-                    ids.insert(m_id);
+                    set<pair<int,int>> ids = clusters[Cid].getIds();
+                    ids.insert(make_pair(m_id,epsilon_neighbourhood.size()));
                     clusters[Cid].setIds(ids);
 
                     //add cluster to subspace
-                    m_subspace.set_Clusters_Counts(clusters,counts);
+                    m_subspace.setClusters(clusters);
+                    m_subspace.setNeighCounts(counts);
                 }
                 else 
                 {
                     //create an empty cluster
-                    set<int> ids;
+                    set<pair<int,int>> ids;
                     vector<double> mean(m_subspace.getDimensionality(),0);
-                    Cluster cluster = Cluster("Merged Cluster",ids,false,m_subspace,mean);
-                    int Cid = clusters.size();
+                    int Cid = m_subspace.getNext();
+                    m_subspace.incrNext();
+                    Cluster cluster = Cluster("Merged Cluster",ids,false,Cid,mean);
 
                     //add old clusters into new cluster and delete old
                     for(int i: cluster_count)
                     {
-                        set<int> c_ids = clusters[i].getIds();
-                        for(int i: c_ids)
+                        set<pair<int,int>> c_ids = clusters[i].getIds();
+                        for(pair<int,int> i: c_ids)
                         {
-                            counts[i].second = Cid;
+                            counts[i.first].second = Cid;
                         }
 
                         ids.insert(c_ids.begin(),c_ids.end());
@@ -203,7 +216,7 @@ Subspace INCRDBSCAN::Insert()
 
                     // add new point into cluster
                     counts.insert(make_pair(m_id,make_pair(epsilon_neighbourhood.size(),Cid)));
-                    ids.insert(m_id);
+                    ids.insert(make_pair(m_id,epsilon_neighbourhood.size()));
 
                     // noise points in the neighbourhood to new cluster 
                     for(int i:epsilon_neighbourhood)
@@ -212,14 +225,14 @@ Subspace INCRDBSCAN::Insert()
                         {
                             clusters.erase(counts[i].second);
                             counts[i].second = Cid;
-                            ids.insert(i);
+                            ids.insert(make_pair(i,counts[i].first));
                         }
                     }
 
                     //add cluster to subspace
-                    cluster.setIds(ids);
-                    clusters.insert(make_pair(Cid,cluster));
-                    m_subspace.set_Clusters_Counts(clusters,counts);
+                    // cluster.setIds(ids);
+                    m_subspace.setClusters(clusters);
+                    m_subspace.setNeighCounts(counts);
                 }    
             }
         }

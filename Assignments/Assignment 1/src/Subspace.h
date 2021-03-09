@@ -15,6 +15,7 @@ private:
     int dimensionality;
     map<int,pair<int,int>> neighCounts;
     map<int,Cluster> clusters;
+    int next_cluster;
 
 public:
     // Create a 1-dimensional subspace
@@ -58,6 +59,10 @@ public:
     void setClusters(map<int, Cluster>& clusters);
 
     void setClusters(vector<Cluster>& clustering);
+
+    void incrNext();
+
+    int getNext();
 };
 
 #endif

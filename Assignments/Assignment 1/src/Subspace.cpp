@@ -194,6 +194,8 @@ void Subspace::setClusters(vector<Cluster>& clustering)
             clusters.insert(make_pair(id,cluster));
         }
     }
+
+    next_cluster = clustering.size();
 }
 
 void Subspace::setClusters(map<int, Cluster>& clusters)
@@ -214,4 +216,14 @@ map<int,pair<int,int>>& Subspace::getNeighcounts()
 map<int,Cluster>& Subspace:: getClusters()
 {
     return (this -> clusters);
+}
+
+void Subspace::incrNext()
+{
+    next_cluster++;
+}
+
+int Subspace::getNext()
+{
+    return next_cluster;
 }
