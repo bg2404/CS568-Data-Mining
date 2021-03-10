@@ -16,6 +16,8 @@ class Cluster
 		map<int,int> ids;
 		bool noise = false;
 		vector<double> mean;
+		int Split;
+
 
 	public:
 		// Cluster Count
@@ -35,6 +37,7 @@ class Cluster
 		map<int,int> &getIds();
 		bool isNoise();
 		vector<int> getIdKeys();
+	    int getSplit();
 
 		// Setters
 		void setName(string &name);
@@ -51,6 +54,8 @@ class Cluster
 		//helper functions
 		void insertId(int id, int neighCount);
 		void deleteId(int id);
+		void incrementSplit();
+    	void resetSplit();
 
 };
 

@@ -16,6 +16,7 @@ Cluster::Cluster(string name, map<int, int>& ids, bool noise, int clusterId, vec
 	this -> clusterId = clusterId;
 	this -> noise = noise;
 	this -> mean = mean;
+	this->Split = 0;
 }
 
 
@@ -26,6 +27,7 @@ Cluster::Cluster(const Cluster &t)
 	this -> clusterId = t.clusterId;
 	this -> noise = t.noise;
 	this -> mean = t.mean;
+	this->Split = this->Split;
 }
 
 Cluster::Cluster()
@@ -65,6 +67,11 @@ vector<int> Cluster::getIdKeys()
 bool Cluster::isNoise()
 {
 	return this -> noise;
+}
+
+int Cluster::getSplit()
+{
+    return Split;
 }
 
 void Cluster::setName(string &name)
@@ -122,4 +129,14 @@ Cluster& Cluster::operator = (const Cluster &t)
 		this->mean = t.mean;
 	}
 	return *this;
+}
+
+void Cluster::incrementSplit()
+{
+    Split++;
+}
+
+void Cluster::resetSplit()
+{
+    Split = 0;
 }

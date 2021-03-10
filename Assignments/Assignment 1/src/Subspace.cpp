@@ -201,7 +201,6 @@ void Subspace::setClusters(vector<Cluster>& clustering)
 	    int clusterId = cluster.getClusterId();
 	    clusters.insert(make_pair(clusterId, cluster));
     }
-
     (this -> clusters) = clusters;
 }
 

@@ -12,6 +12,7 @@
 #include "Cluster.h"
 #include "Relation.h"
 #include "Subspace.h"
+#include "DBSCAN.h"
 
 using namespace std;
 
@@ -183,6 +184,105 @@ Subspace INCRDBSCAN::Insert()
 	return m_subspace;
 }
 
+Subspace INCRDBSCAN::Delete()
+{
+	//useful declarations
+	int noiseClusterId = m_subspace.getNoiseClusterId();
+	map<int,Cluster>& clusters = m_subspace.getClusters();
+	bool potnetialSplit = true;
+	//cluster of point to delete
+	int Cid = noiseClusterId;
+	int treshold = 2;
+
+	//find epsilon neighbourhood and delete point
+	vector<point> epsilon_neighbourhood = getAndDecrementNeighbourhood(&Cid);
+
+	//Case1: Core Point
+	if(epsilon_neighbourhood.size()>=m_minPts)
+	{
+		for(auto p : epsilon_neighbourhood)
+		{
+			if(p.neighCount<m_minPts)
+			{
+				//delete point 
+				clusters[p.clusterId].deleteId(p.id);
+
+				int clusterId = getNearestCorePointClusterId(p);
+				//make point noise
+				if(clusterId==-1)
+					clusterId = noiseClusterId;
+				//add to the new cluster
+				clusters[clusterId].insertId(p.id,p.neighCount);
+
+				//Case of potential split
+				if(clusterId != p.clusterId)
+					potnetialSplit = true;
+
+			}
+		}
+	}
+	//Case2: Not a core point
+	else 
+	{
+		vector<point> pointsLostCore = getPointsLostCore(epsilon_neighbourhood);
+
+		//If points lost core property
+		if(pointsLostCore.size()>0)
+		{
+			//add points to check
+			set<point> pointsToCheck;
+			for(point p : pointsLostCore)
+			{
+				addPointsToCheck(p,pointsToCheck);
+			}
+
+			//for each point add to nearest core cluster point or to noise cluster
+			for(auto p : pointsToCheck)
+			{
+				int clusterId = getNearestCorePointClusterId(p);
+				if(clusterId==-1)
+					clusterId = noiseClusterId;
+				clusters[clusterId].insertId(p.id,p.neighCount);
+
+				if(clusterId != p.clusterId)
+					potnetialSplit = true;
+			}
+		}
+	}
+
+	//increment if potential split
+	if(Cid != noiseClusterId && potnetialSplit)
+	{
+		clusters[Cid].incrementSplit();
+	}
+
+	//check for split condition and run static DBSCAN
+	if(Cid != noiseClusterId && clusters[Cid].getSplit() >= treshold)
+	{
+		Relation<double> dataBase;
+		vector<int> idKeys = clusters[Cid].getIdKeys();	
+		for(int i:idKeys)
+		{
+			dataBase.push_back(m_points[i]);
+		}
+		DBSCAN dbscan = DBSCAN(dataBase,m_subspace,m_eps,m_minPts,m_ids);
+		vector<Cluster> splitClusters = dbscan.getClusters();
+
+		//update if the clusters split
+		if(splitClusters.size()>1)
+		{
+			clusters.erase(Cid);
+			for(Cluster cluster : splitClusters)
+			{
+				int clusterId = cluster.getClusterId();
+	    		clusters.insert(make_pair(clusterId, cluster));
+			}
+		}
+	}
+
+	return m_subspace;
+}
+
 vector<point> INCRDBSCAN::getAndIncrementNeighbourhood()
 {
 	vector<point> neighbourhood;
@@ -194,16 +294,101 @@ vector<point> INCRDBSCAN::getAndIncrementNeighbourhood()
 		for(auto& id : ids)
 		{
 			int i = id.first;
-			if(dist(m_point, m_points[i]) <= m_eps)
+			if(i != m_ids[m_point] && dist(m_point, m_points[i]) <= m_eps)
 			{
 				id.second++;
 				neighbourhood.push_back(point(m_ids[m_points[i]], id.second, cluster.first));
+			}
+			else if(i == m_ids[m_point])
+			{
+				clusters[cluster.first].deleteId(i);
 			}
 		}
 
 	}
 	return neighbourhood;
 }
+
+vector<point> INCRDBSCAN::getAndDecrementNeighbourhood(int *pCid)
+{
+	vector<point> neighbourhood;
+	map<int, Cluster>& clusters = m_subspace.getClusters();
+
+	for(auto& cluster : clusters)
+	{
+		map<int, int>& ids = cluster.second.getIds();
+		for(auto& id : ids)
+		{
+			int i = id.first;
+			if(dist(m_point, m_points[i]) <= m_eps && i != m_ids[m_point])
+			{
+				id.second--;
+				neighbourhood.push_back(point(m_ids[m_points[i]], id.second, cluster.first));
+			}
+			else if(m_ids[m_point] == i )
+			{
+				//delete point and note the cluster the point is part of
+				*pCid = cluster.first;
+			}
+		}
+
+	}
+	clusters[*pCid].deleteId(m_ids[m_point]);
+	return neighbourhood;
+}
+
+vector<point> INCRDBSCAN::getPointsLostCore(vector<point> epsilonNeighbourhood)
+{
+	vector<point> pointsLostCore;
+	for(point p : epsilonNeighbourhood)
+	{
+		if(p.neighCount == m_minPts-1)
+		{
+			pointsLostCore.push_back(p);
+		}
+	}
+	return pointsLostCore;
+}
+
+int INCRDBSCAN:: getNearestCorePointClusterId(point p)
+{
+	double min_dis = 10000000000;
+	int clusterId = -1;
+	
+	map<int, Cluster> clusters = m_subspace.getClusters();
+	for(auto cluster : clusters)
+	{
+		map<int, int> ids = cluster.second.getIds();
+		double dis;
+		for(auto id : ids)
+		{
+			int i = id.first;
+			if(p.id != i && (dis = dist(m_points[p.id], m_points[i])) <= m_eps && id.second >= m_minPts && dis<min_dis)
+			{
+				dis = min_dis;
+				clusterId = cluster.first;
+			}
+		}
+	}
+	return clusterId;
+}
+
+void INCRDBSCAN::addPointsToCheck(point p,set<point> &pointsToCheck)
+{
+	map<int, Cluster>& clusters = m_subspace.getClusters();
+
+	map<int, int>& ids = clusters[p.clusterId].getIds();
+	for(auto& id : ids)
+	{
+		int i = id.first;
+		if(dist(m_points[p.id], m_points[i]) <= m_eps && id.second< m_minPts)
+		{
+			clusters[p.clusterId].deleteId(i);
+			pointsToCheck.insert(point(id.first,id.second,p.clusterId));
+		}
+	}
+}
+
 
 double INCRDBSCAN::dist(vector<double>& p1, vector<double>& p2) 
 {

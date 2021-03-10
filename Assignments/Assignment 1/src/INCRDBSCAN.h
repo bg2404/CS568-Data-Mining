@@ -26,6 +26,10 @@ struct point
 		this -> neighCount = neighCount;
 		this -> clusterId = clusterId;
 	}
+    bool operator<(const point& t) const
+    { 
+        return (this->id < t.id); 
+    } 
 };
 
 class INCRDBSCAN
@@ -39,10 +43,15 @@ class INCRDBSCAN
     int m_id;
 
     vector<point> getAndIncrementNeighbourhood();
+    vector<point> getAndDecrementNeighbourhood(int *pCid);
+    vector<point> getPointsLostCore(vector<point> epsilonNeighbourhood);
+    int getNearestCorePointClusterId(point p);
+    void addPointsToCheck(point p,set<point> &pointsToCheck);
     double dist(vector<double>&, vector<double>&);
 
     public:
     INCRDBSCAN(vector<double> point, double eps,uint minPts,Relation<double> points,Subspace &subspace, int id,map<vector<double>,int> ids);
     Subspace Insert();
+    Subspace Delete();
 };
 #endif

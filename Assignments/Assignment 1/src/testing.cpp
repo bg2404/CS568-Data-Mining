@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	subspace.setClusters(clustering);
 	subspace.print();
 
-	//get points to add
+	//get points to delete
 	Relation<double> AddPoints;
 	ReadInput reader2(file_incr);
 	AddPoints = reader2.read();
@@ -57,10 +57,9 @@ int main(int argc, char **argv)
 	{
 		vector<double> point = AddPoints[i];
 		INCRDBSCAN incrdbscan = INCRDBSCAN(point,epsilon,mnPnts,dataBase,subspace,id,dbids);
-		subspace = incrdbscan.Insert();
-		dataBase.push_back(point);
-		dbids.insert(make_pair(point,id));
-		id++;
+		subspace = incrdbscan.Delete();
+		dbids.erase(point);
 		subspace.print();
 	}    
+
 }
