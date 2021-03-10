@@ -189,7 +189,7 @@ Subspace INCRDBSCAN::Delete()
 	//useful declarations
 	int noiseClusterId = m_subspace.getNoiseClusterId();
 	map<int,Cluster>& clusters = m_subspace.getClusters();
-	bool potnetialSplit = true;
+	bool potnetialSplit = false;
 	//cluster of point to delete
 	int Cid = noiseClusterId;
 	int treshold = 2;
