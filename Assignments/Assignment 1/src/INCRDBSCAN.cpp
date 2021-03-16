@@ -24,6 +24,7 @@ INCRDBSCAN::INCRDBSCAN(vector<double> point, double eps, uint minPts, Relation<d
     m_subspace = subspace;
     m_id = id;
     m_ids = ids;
+    change = true;
 }
 
 Subspace INCRDBSCAN::Insert() {
@@ -46,6 +47,7 @@ Subspace INCRDBSCAN::Insert() {
     if (!has_core) {
         // add point to noise
         clusters[noiseClusterId].insertId(m_id, epsilon_neighbourhood.size());
+        change = true;
     }
     //Case2: some core points in the neighbourhood
     else {
@@ -206,13 +208,14 @@ Subspace INCRDBSCAN::Delete() {
                     potentialSplit = true;
             }
         }
+        else 
+        change  = false;
     }
 
     //increment if potential split
     if (Cid != noiseClusterId && potentialSplit) {
         clusters[Cid].incrementSplit();
     }
-
     //check for split condition and run static DBSCAN
     if (Cid != noiseClusterId && clusters[Cid].getSplit() >= threshold) {
         Relation<double> dataBase;
@@ -326,5 +329,10 @@ double INCRDBSCAN::dist(vector<double>& p1, vector<double>& p2) {
         }
     }
     return sqrt(d);
+}
+
+bool INCRDBSCAN::getChange()
+{
+    return change;
 }
 //TODO: mean updation everywhere

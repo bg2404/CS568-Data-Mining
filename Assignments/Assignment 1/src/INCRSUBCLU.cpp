@@ -37,6 +37,8 @@ string to_binary(int num) {
 
 void INCRSUBCLU::retrieveSubspaces(int n) {
 	// Go through all the Subspaces
+	//Maintain a set of remaining subspaces
+	allSubspaces.clear();
 	for(long long i = 1; i < (1 << n); i++) {
 
 		// Create Subspace Name
@@ -46,12 +48,12 @@ void INCRSUBCLU::retrieveSubspaces(int n) {
 		for(int i = 0; i < (int)dimensions.size(); i++)
 			dimensions[i] = d[i] - '0';
 		file = file + d + ".csv";
-
 		//Read Subspace File
 		ReadInput reader(file);
 		Subspace subspace = reader.readSubspace(dimensions);
 		
 		(this -> subspaces).insert(make_pair(dimensions, subspace));
+		allSubspaces.insert(dimensions);
 	}
 }
 
@@ -89,7 +91,7 @@ void INCRSUBCLU::run() {
 		int size = (int)update.size() - 1;
 		int type = update[size];
 		update.pop_back();
-
+		set<vector<int>> remainingSubspaces = allSubspaces;
 
 		if (size <= 1) {
 			cout << "Error: INCRSUBCLU needs Multivariate Data";
@@ -113,16 +115,20 @@ void INCRSUBCLU::run() {
 
 			subspaces[(currSubspace.getDimensions())] = currSubspace;
 
-			candidates.push_back(Subspace(currSubspace.getDimensions()));
+			if(incrdb.getChange())
+			{
+				candidates.push_back(Subspace(currSubspace.getDimensions()));
+				remainingSubspaces.erase(currSubspace.getDimensions());
+			}
 		}
 
 		cout << "Apriori Buildup starting to identify higher dimension clusters....\n";
 		// Apriori BuildUp
 		for (int dimensionality = 2; dimensionality <= size; dimensionality++) {
 			if (!candidates.empty()) {
-				vector<Subspace> nextCandidates = generateSubspaceCandidates(candidates);
-
-				for (Subspace candidate : nextCandidates) {
+				candidates = generateSubspaceCandidates(candidates);
+				vector<Subspace> nextCandidates;	
+				for (Subspace candidate : candidates) {
 					Subspace currSubspace = subspaces[candidate.getDimensions()];
 					INCRDBSCAN incrdb(update, this -> epsilon, this -> minPnts, this -> dataBase, currSubspace, (this -> dataBase).size(), (this -> dbids));
 
@@ -132,18 +138,47 @@ void INCRSUBCLU::run() {
 						currSubspace = incrdb.Insert();
 
 					subspaces[(currSubspace.getDimensions())] = currSubspace;
-					//TODO: prune subspace with no change
 
-
+					if(incrdb.getChange())
+					{
+						nextCandidates.push_back(candidate);
+						remainingSubspaces.erase(candidate.getDimensions());
+					}
 				}
 				
 				candidates = nextCandidates;
-
 			}
 			else
 				break;
 		}
 
+		//add noise point or simply deleting the point from pruned subspace 
+		//TODO find size of epsilong neighbourhood in the cluster or not
+		//better way to delete point from the cluster
+		for(vector<int> dimensions : remainingSubspaces)
+		{
+			Subspace subspace = subspaces[dimensions];
+			if(type == 1)
+			{
+				int noiseClusterId = subspace.getNoiseClusterId();
+				map<int, Cluster>& clusters = subspace.getClusters();
+				clusters[noiseClusterId].insertId(dataBase.size(),0);
+			}
+			else
+			{
+				map<int, Cluster>& clusters = subspace.getClusters();
+
+				for (auto& cluster : clusters) {
+					map<int, int>& ids = cluster.second.getIds();
+					if(ids.find(dbids[update]) != ids.end())
+					{	clusters[cluster.first].deleteId(dbids[update]);
+						break;
+					}
+				}
+			}
+
+			subspaces[dimensions] = subspace;
+		}
 	}
 }
 
@@ -153,6 +188,33 @@ void INCRSUBCLU::print(){
 		subspace.second.print();
 		cout << "----------------------------\n";
 	}
+
+	// printing Subspace*.csv files
+    for (pair<vector<int>,Subspace> p : subspaces) {
+        string file = "Subspace";
+        Subspace subspace = p.second;
+        for (auto d : subspace.getDimensions()) {
+            file.push_back((char)(d + '0'));
+        }
+        file = file + ".csv";
+
+        fstream p_file;
+        p_file.open(file, ios::out);
+
+
+        for (pair<int,Cluster> c : subspace.getClusters()) {
+			Cluster cluster = c.second;
+			int clusterId = cluster.getClusterId();
+			int noise = cluster.isNoise();
+			map<int, int> ids = cluster.getIds();
+			int split = cluster.getSplit();
+			p_file << clusterId << ' ' << noise << ' ' << split << ' ' << ids.size() << '\n';
+			for(pair<int, int> id : ids) {
+				p_file << id.first << ' ' << id.second << '\n';
+			}
+        }
+        p_file.close();
+    }
 
 }
 

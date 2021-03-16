@@ -18,7 +18,7 @@ class INCRSUBCLU {
     int minDim;
     Relation<double> dataBase;
     Relation<double> updates;
-
+    set<vector<int>> allSubspaces;
     //subspace map
     map<vector<int>, Subspace> subspaces;
 

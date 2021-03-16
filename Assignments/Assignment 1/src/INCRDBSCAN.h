@@ -37,6 +37,7 @@ class INCRDBSCAN {
     Subspace m_subspace;
     map<vector<double>, int> m_ids;
     int m_id;
+    bool change;
 
     vector<point> getAndIncrementNeighbourhood();
     vector<point> getAndDecrementNeighbourhood(int *pCid);
@@ -47,6 +48,7 @@ class INCRDBSCAN {
 
    public:
     INCRDBSCAN(vector<double> point, double eps, uint minPts, Relation<double> points, Subspace &subspace, int id, map<vector<double>, int> ids);
+    bool getChange();
     Subspace Insert();
     Subspace Delete();
 };
