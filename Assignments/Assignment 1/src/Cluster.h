@@ -42,6 +42,7 @@ class Cluster {
     void setClusterId(int clusterId);
     void setIds(map<int, int> &ids);
     void setNoise(bool noise);
+    void setSplit(int split);
 
     // Displays the Cluster details
     void print();

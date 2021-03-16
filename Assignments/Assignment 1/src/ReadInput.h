@@ -6,7 +6,10 @@
 #include <string>
 #include <vector>
 
+
 #include "Relation.h"
+#include "Subspace.h"
+#include "Cluster.h"
 
 using namespace std;
 
@@ -23,6 +26,7 @@ class ReadInput {
 
     //read input
     Relation<double> read();
+    Subspace readSubspace(vector<int>& dimensions);
 };
 
 #endif

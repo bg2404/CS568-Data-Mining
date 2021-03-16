@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "Relation.h"
+#include "Subspace.h"
+#include "Cluster.h"
 
 using namespace std;
 
@@ -21,9 +23,7 @@ std::string trim(string s) {
 ReadInput::ReadInput(string file) {
     inputFile.open(file, ios::in);
 
-    if (!inputFile.is_open())
-        cout << "404 File: " << file << " not found!!\n";
-    else
+    if (inputFile.is_open())
         cout << "Opening File: " << file << " ....\n";
 }
 
@@ -61,4 +61,58 @@ Relation<double> ReadInput::read() {
     }
     data.pop_back();
     return data;
+}
+
+Subspace ReadInput::readSubspace(vector<int>& dimensions) {
+
+	Subspace subspace(dimensions);
+	string line;
+	if(!inputFile.is_open()) 
+	{
+		while (inputFile) {
+			//read a line
+			getline(inputFile, line);
+			//trim left and right
+			line = trim(line);
+
+			if (line == "" || line == "\n")
+				continue;
+
+			//devide into different words
+			istringstream ss(line);
+
+			//convert each word to float and add to row
+			string word;
+			ss >> word;
+			int clusterId = stoi(word);
+			ss >> word;
+			bool noise = stoi(word);
+			ss >> word;
+			int split  = stoi(word);
+			ss >> word;
+			int n = stoi(word);
+
+			map<int, int> ids;
+			for(int i = 0; i < n; i++) {
+				getline(inputFile, line);
+				line = trim(line);
+
+				istringstream ss(line);
+				string word;
+				ss >> word;
+				int id = stoi(word);
+				ss >> word;
+				int neighCount = stoi(word);
+
+				ids.insert(make_pair(id, neighCount));
+			}
+
+			vector<double> mean;
+			string name = "Cluster_" + to_string(clusterId);
+			Cluster cluster(name, ids, noise, clusterId,mean);
+			cluster.setSplit(split);
+			subspace.insertCluster(cluster);
+		}
+	}
+	return subspace;
 }

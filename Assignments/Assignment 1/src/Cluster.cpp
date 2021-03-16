@@ -78,6 +78,10 @@ void Cluster::setClusterId(int clusterId) {
     this->clusterId = clusterId;
 }
 
+void Cluster::setSplit(int split) {
+    this->Split = split;
+}
+
 void Cluster::insertId(int id, int neighCount) {
     (this->ids).insert(make_pair(id, neighCount));
 }

@@ -19,21 +19,18 @@ class INCRSUBCLU {
     Relation<double> dataBase;
     Relation<double> updates;
 
-    // map subspaces to their respective clusters
-    map<Subspace, vector<Cluster>> Clusterings;
+    //subspace map
+    map<vector<int>, Subspace> subspaces;
 
     // map instances to index
     map<vector<double>, int> dbids;
 
    public:
     INCRSUBCLU(string databaseFilename, string updatesFilename, int minpnts, double epsilon, int mindim = 1);
-    map<Subspace, vector<Cluster>> run();
-    vector<Cluster> runINCRDBSCAN(Subspace &currSubspace, set<int> &ids);
+    void retrieveSubspaces(int n);
+    void run();
     vector<Subspace> generateSubspaceCandidates(vector<Subspace> &subspaces);
-    Subspace besttSubspace(vector<Subspace> &subspaces, Subspace &candidate);
     bool checkLower(Subspace &candidate, vector<Subspace> &subspaces);
-    int getSubspaceData(int dim, Relation<double> &database, vector<Cluster> &clusterData, Subspace &subspace, map<vector<double>, int> &neighbourhoodData);
-    bool runUpdate(int dim, vector<double> &update, Subspace &subspace);
 };
 
 #endif

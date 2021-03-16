@@ -9,6 +9,8 @@
 #include "Relation.h"
 #include "SUBCLU.h"
 #include "Subspace.h"
+#include "INCRDBSCAN.h"
+#include "INCRSUBCLU.h"
 
 using namespace std;
 
@@ -39,23 +41,6 @@ int main(int argc, char **argv) {
     cout << "Starting SUBCLU run with file = " << file << " ,mnPnts = " << mnPnts << " ,epsilon = " << epsilon << " .....\n";
     map<Subspace, vector<Cluster>> result = subclu.run();
 
-    // Printing Results
-    /*
-	for (auto x : result)
-	{
-		cout << "############################################\n";
-		Subspace subspace = x.first;
-		subspace.print();
-		cout << "############################################\n";
-
-		for (auto y : x.second)
-		{
-			y.print();
-			cout << "-----------------------------------------------\n";
-		}
-		cout << "////////////////////////////////////////////\n";
-	}
-	*/
 
     // Testing and Visualisation
     ReadInput reader(file);
@@ -64,64 +49,42 @@ int main(int argc, char **argv) {
     if (!dataBase.size())
         return 0;
 
-    int total_d = dataBase[0].size();
 
     for (int i = 0; i < (int)(dataBase.size()); i++) {
         dbids[dataBase[i]] = i;
     }
 
-    Subspace ss;
-
-    for (auto x : result) {
-        // bool flag = false;
+    // printing Subspace*.csv files
+    for (auto clustering : result) {
         string file = "Subspace";
-        Subspace subspace = x.first;
+        Subspace subspace = clustering.first;
         for (auto d : subspace.getDimensions()) {
             file.push_back((char)(d + '0'));
-        }
-        if (file == "Subsapce1111.csv") {
-            ss = subspace;
-            // flag = true;
         }
         file = file + ".csv";
 
         fstream p_file;
         p_file.open(file, ios::out);
 
-        int label = 0;
 
-        for (auto y : x.second) {
-            map<int, int> idPairs = y.getIds();
-            set<int> ids;
-            for (auto x : idPairs)
-                ids.insert(x.first);
-            for (int id : ids) {
-                idc[id] = label;
-                for (int i = 0; i < total_d; i++) {
-                    if (subspace.hasDimension(i)) {
-                        p_file << dataBase[id][i] << " ";
-                    }
-                }
-                p_file << label << "\n";
-            }
-            label++;
+        for (auto cluster : clustering.second) {
+		int clusterId = cluster.getClusterId();
+		int noise = cluster.isNoise();
+		map<int, int> ids = cluster.getIds();
+		int split = cluster.getSplit();
+		p_file << clusterId << ' ' << noise << ' ' << split << ' ' << ids.size() << '\n';
+		for(pair<int, int> id : ids) {
+			p_file << id.first << ' ' << id.second << '\n';
+		}
+
         }
         p_file.close();
     }
 
-    //for confusion_matrix for Subspace1111.csv database
-    string filename = "confusion_matrix.csv";
-    fstream p_file;
-    p_file.open(filename, ios::out);
-    for (int i = 0; i < (int)(dataBase.size()); i++) {
-        for (int j = 0; j < total_d; j++) {
-            p_file << dataBase[i][j] << " ";
-        }
-        if (idc.find(i) != idc.end()) {
-            p_file << idc[i] << "\n";
-        } else {
-            p_file << "-1\n";
-        }
-    }
+    // incremental subclu
+    INCRSUBCLU incrsubclu(file, "test_incr.txt", mnPnts, epsilon);
+    incrsubclu.run();
+
+
     return 0;
 }
