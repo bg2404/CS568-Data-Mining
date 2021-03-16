@@ -67,7 +67,7 @@ Subspace ReadInput::readSubspace(vector<int>& dimensions) {
 
 	Subspace subspace(dimensions);
 	string line;
-	if(!inputFile.is_open()) 
+	if(inputFile.is_open()) 
 	{
 		while (inputFile) {
 			//read a line
@@ -113,6 +113,7 @@ Subspace ReadInput::readSubspace(vector<int>& dimensions) {
 			cluster.setSplit(split);
 			subspace.insertCluster(cluster);
 		}
+		subspace.print();
 	}
 	return subspace;
 }

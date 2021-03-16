@@ -30,7 +30,7 @@ string to_binary(int num) {
             }
             num >>= 1;
         }
-        reverse(ret.begin(), ret.end());
+        //reverse(ret.begin(), ret.end());
         return ret;
     }
 }
@@ -50,7 +50,8 @@ void INCRSUBCLU::retrieveSubspaces(int n) {
 		//Read Subspace File
 		ReadInput reader(file);
 		Subspace subspace = reader.readSubspace(dimensions);
-		(this -> subspaces).insert({dimensions, subspace});
+		
+		(this -> subspaces).insert(make_pair(dimensions, subspace));
 	}
 }
 
@@ -66,6 +67,13 @@ INCRSUBCLU::INCRSUBCLU(string databaseFilename, string updatesFilename, int minP
 
     ReadInput reader_2(updatesFilename);
     this->updates = reader_2.read();
+
+    cout << "Update file\n";
+    for(auto update : updates) {
+	    for(auto x : update)
+		    cout << x << ' ';
+	    cout << '\n';
+    }
 
     for (int i = 0; i < (int)(dataBase.size()); i++) {
         (this->dbids)[dataBase[i]] = i;
@@ -102,6 +110,7 @@ void INCRSUBCLU::run() {
 			else
 				currSubspace = incrdb.Insert();
 
+
 			subspaces[(currSubspace.getDimensions())] = currSubspace;
 
 			candidates.push_back(Subspace(currSubspace.getDimensions()));
@@ -136,6 +145,15 @@ void INCRSUBCLU::run() {
 		}
 
 	}
+}
+
+void INCRSUBCLU::print(){
+	cout << "PRINTING..........\n";
+	for(auto subspace : (this -> subspaces)) {
+		subspace.second.print();
+		cout << "----------------------------\n";
+	}
+
 }
 
 vector<Subspace> INCRSUBCLU::generateSubspaceCandidates(vector<Subspace> &subspaces) {

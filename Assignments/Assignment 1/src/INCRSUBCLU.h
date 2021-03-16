@@ -31,6 +31,7 @@ class INCRSUBCLU {
     void run();
     vector<Subspace> generateSubspaceCandidates(vector<Subspace> &subspaces);
     bool checkLower(Subspace &candidate, vector<Subspace> &subspaces);
+    void print();
 };
 
 #endif

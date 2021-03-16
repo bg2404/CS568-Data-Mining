@@ -123,7 +123,7 @@ void Subspace::print() {
         cout << x;
     cout << '\n';
     for (auto it : clusters) {
-        cout << "Cluster" << it.first << " ";
+        cout << "Cluster_" << it.first << " ";
         Cluster cluster = it.second;
         map<int, int> ids = cluster.getIds();
         cout << "Is Noise:" << cluster.isNoise() << "\n";

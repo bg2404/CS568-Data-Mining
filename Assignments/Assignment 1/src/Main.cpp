@@ -81,9 +81,13 @@ int main(int argc, char **argv) {
         p_file.close();
     }
 
+    
     // incremental subclu
+    cout << "STARTING INCRSUBCLU...............\n";
     INCRSUBCLU incrsubclu(file, "test_incr.txt", mnPnts, epsilon);
     incrsubclu.run();
+    incrsubclu.print();
+    
 
 
     return 0;
