@@ -1,28 +1,28 @@
 #ifndef READINPUT_H
 #define READINPUT_H
 
-#include <iostream>
 #include <fstream>
-#include <vector>
+#include <iostream>
 #include <string>
+#include <vector>
+
 #include "Relation.h"
 
 using namespace std;
 
-class ReadInput
-{
-	private:
-		ifstream inputFile;
+class ReadInput {
+   private:
+    ifstream inputFile;
 
-	public:
-		// open the file
-		ReadInput(string file);
+   public:
+    // open the file
+    ReadInput(string file);
 
-		// close the file
-		~ReadInput();
+    // close the file
+    ~ReadInput();
 
-		//read input
-		Relation<double> read();
+    //read input
+    Relation<double> read();
 };
 
 #endif

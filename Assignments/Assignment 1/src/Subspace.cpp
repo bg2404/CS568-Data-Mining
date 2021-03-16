@@ -2,107 +2,87 @@
 
 #include <algorithm>
 #include <iostream>
-#include <vector>
 #include <map>
+#include <vector>
 
-#include "Cluster.h"
 #include "BitsUtil.h"
+#include "Cluster.h"
 
 using namespace std;
 
-Subspace::Subspace(int dimension)
-{
+Subspace::Subspace(int dimension) {
     (this->dimensions).assign(dimension + 1, 0);
     (this->dimensions)[dimension] = 1;
     this->dimensionality = 1;
 }
 
-Subspace::Subspace()
-{
+Subspace::Subspace() {
     this->dimensions = vector<int>();
     this->dimensionality = 0;
 }
 
-Subspace::Subspace(vector<int> &dimensions)
-{
+Subspace::Subspace(vector<int> &dimensions) {
     this->dimensions = dimensions;
     this->dimensionality = count(dimensions.begin(), dimensions.end(), 1);
 }
 
-vector<int> &Subspace::getDimensions()
-{
+vector<int> &Subspace::getDimensions() {
     return this->dimensions;
 }
 
-int &Subspace::getDimensionality()
-{
+int &Subspace::getDimensionality() {
     return this->dimensionality;
 }
 
-map<int, Cluster>& Subspace:: getClusters()
-{
-    return (this -> clusters);
+map<int, Cluster> &Subspace::getClusters() {
+    return (this->clusters);
 }
 
-void Subspace::addDimension(int dimension)
-{
-	if(dimension < 0)
-	{
-		cout << "addDimension invalid argument < 0\n";
-		return;
-	}
-	int size = (this -> dimensions).size();
+void Subspace::addDimension(int dimension) {
+    if (dimension < 0) {
+        cout << "addDimension invalid argument < 0\n";
+        return;
+    }
+    int size = (this->dimensions).size();
 
-	if(dimension < size)
-	{
-		if((this -> dimensions)[dimension] == 0)
-			(this -> dimensionality)++;
+    if (dimension < size) {
+        if ((this->dimensions)[dimension] == 0)
+            (this->dimensionality)++;
 
-		(this -> dimensions)[dimension] = 1;
-	}
-	else if(dimension == size)
-	{
-		(this -> dimensionality)++;
-		(this -> dimensions).push_back(1);
-	}
-	else
-	{
-		cout << "addDimension invalid argument > size\n";
-	}
-
+        (this->dimensions)[dimension] = 1;
+    } else if (dimension == size) {
+        (this->dimensionality)++;
+        (this->dimensions).push_back(1);
+    } else {
+        cout << "addDimension invalid argument > size\n";
+    }
 }
 
-void Subspace::removeDimension(int dimension)
-{
-	if(dimension < 0)
-	{
-		cout << "removeDimension invalid argument < 0\n";
-		return;
-	}
-	int size = (this -> dimensions).size();
+void Subspace::removeDimension(int dimension) {
+    if (dimension < 0) {
+        cout << "removeDimension invalid argument < 0\n";
+        return;
+    }
+    int size = (this->dimensions).size();
 
-	if(dimension < size)
-	{
-		if((this -> dimensions)[dimension] == 1)
-			(this -> dimensionality)--;
+    if (dimension < size) {
+        if ((this->dimensions)[dimension] == 1)
+            (this->dimensionality)--;
 
-		if(dimension < size - 1)
-			(this -> dimensions)[dimension] = 0;
-		else
-			(this -> dimensions).pop_back();
-	}
-	else
-		cout << "removeDimension invalid argument >= size\n";
+        if (dimension < size - 1)
+            (this->dimensions)[dimension] = 0;
+        else
+            (this->dimensions).pop_back();
+    } else
+        cout << "removeDimension invalid argument >= size\n";
 }
 
-Subspace Subspace::join(Subspace &other)
-{
+Subspace Subspace::join(Subspace &other) {
     vector<int> newDimensions = joinLastDimensions(other);
     return Subspace(newDimensions);
 }
 
-vector<int> Subspace::joinLastDimensions(Subspace &other)
-{
+vector<int> Subspace::joinLastDimensions(Subspace &other) {
     vector<int> result;
     if ((this->dimensionality) != other.dimensionality)
         return vector<int>();
@@ -120,10 +100,8 @@ vector<int> Subspace::joinLastDimensions(Subspace &other)
     return result;
 }
 
-bool Subspace::isSubspace(Subspace &subspace)
-{
-    if ((this->dimensionality) <= subspace.dimensionality)
-    {
+bool Subspace::isSubspace(Subspace &subspace) {
+    if ((this->dimensionality) <= subspace.dimensionality) {
         if ((this->dimensionality) == BitsUtil::intersection(this->dimensions, subspace.dimensions))
             return true;
         return false;
@@ -131,56 +109,46 @@ bool Subspace::isSubspace(Subspace &subspace)
     return false;
 }
 
-bool Subspace::hasDimension(int i)
-{
-    if (i < (int)((this->dimensions).size()))
-    {
+bool Subspace::hasDimension(int i) {
+    if (i < (int)((this->dimensions).size())) {
         return (this->dimensions)[i];
     }
     return false;
 }
 
-void Subspace::print()
-{
+void Subspace::print() {
     cout << "dimensionality = " << this->dimensionality << '\n';
     cout << "dimensions = ";
     for (auto x : this->dimensions)
         cout << x;
     cout << '\n';
-    for(auto it : clusters)
-    {
-        cout<<"Cluster"<<it.first<<" ";
+    for (auto it : clusters) {
+        cout << "Cluster" << it.first << " ";
         Cluster cluster = it.second;
-        map<int,int> ids = cluster.getIds();
-        cout<<"Is Noise:"<<cluster.isNoise()<<"\n";
-        for(pair<int,int> point: ids)
-        {
-            cout<<point.first<<" "<<point.second<<"\n";
+        map<int, int> ids = cluster.getIds();
+        cout << "Is Noise:" << cluster.isNoise() << "\n";
+        for (pair<int, int> point : ids) {
+            cout << point.first << " " << point.second << "\n";
         }
     }
 }
 
-bool Subspace::isValid()
-{
+bool Subspace::isValid() {
     return ((this->dimensionality) != 0 && !(this->dimensions).empty());
 }
 
-bool Subspace::operator<(const Subspace &s2) const
-{
-    if ((this -> dimensionality) < s2.dimensionality)
+bool Subspace::operator<(const Subspace &s2) const {
+    if ((this->dimensionality) < s2.dimensionality)
         return true;
-    else if ((this -> dimensionality) > s2.dimensionality)
+    else if ((this->dimensionality) > s2.dimensionality)
         return false;
-    else if ((this -> dimensions).size() < s2.dimensions.size())
+    else if ((this->dimensions).size() < s2.dimensions.size())
         return true;
-    else if((this -> dimensions).size() > s2.dimensions.size())
-	    return false;
-    else
-    {
-        for (int i = (int)((this -> dimensions).size()) - 1; i >= 0; i--)
-        {
-            if ((dimensions[i] + s2.dimensions[i]) == 1)
-            {
+    else if ((this->dimensions).size() > s2.dimensions.size())
+        return false;
+    else {
+        for (int i = (int)((this->dimensions).size()) - 1; i >= 0; i--) {
+            if ((dimensions[i] + s2.dimensions[i]) == 1) {
                 if (dimensions[i] == 1)
                     return false;
                 else
@@ -191,40 +159,32 @@ bool Subspace::operator<(const Subspace &s2) const
     return false;
 }
 
-
-void Subspace::setClusters(vector<Cluster>& clustering)
-{
+void Subspace::setClusters(vector<Cluster> &clustering) {
     map<int, Cluster> clusters;
 
-    for(auto cluster : clustering)
-    {
-	    int clusterId = cluster.getClusterId();
-	    clusters.insert(make_pair(clusterId, cluster));
+    for (auto cluster : clustering) {
+        int clusterId = cluster.getClusterId();
+        clusters.insert(make_pair(clusterId, cluster));
     }
-    (this -> clusters) = clusters;
+    (this->clusters) = clusters;
 }
 
-void Subspace::setClusters(map<int, Cluster>& clusters)
-{
-	(this -> clusters) = clusters;
+void Subspace::setClusters(map<int, Cluster> &clusters) {
+    (this->clusters) = clusters;
 }
 
-void Subspace::insertCluster(Cluster cluster)
-{
-	(this -> clusters).insert(make_pair(cluster.getClusterId(), cluster));
+void Subspace::insertCluster(Cluster cluster) {
+    (this->clusters).insert(make_pair(cluster.getClusterId(), cluster));
 }
 
-void Subspace::deleteCluster(int clusterId)
-{
-	(this -> clusters).erase(clusterId);
+void Subspace::deleteCluster(int clusterId) {
+    (this->clusters).erase(clusterId);
 }
 
-int Subspace::getNoiseClusterId()
-{
-	for(auto cluster: (this -> clusters))
-	{
-		if(cluster.second.isNoise())
-			return cluster.first;
-	}
-	return -1;
+int Subspace::getNoiseClusterId() {
+    for (auto cluster : (this->clusters)) {
+        if (cluster.second.isNoise())
+            return cluster.first;
+    }
+    return -1;
 }

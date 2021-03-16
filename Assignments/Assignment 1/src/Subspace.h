@@ -2,20 +2,20 @@
 #define SUBSPACE_H
 
 #include <iostream>
-#include <vector>
 #include <map>
+#include <vector>
+
 #include "Cluster.h"
 
 using namespace std;
 
-class Subspace
-{
-private:
+class Subspace {
+   private:
     vector<int> dimensions;
     int dimensionality;
     map<int, Cluster> clusters;
 
-public:
+   public:
     // Create a 1-dimensional subspace
     Subspace(int dimension);
 
@@ -27,8 +27,8 @@ public:
 
     // Getters
     vector<int> &getDimensions();
-    int& getDimensionality();
-    map<int, Cluster>& getClusters();
+    int &getDimensionality();
+    map<int, Cluster> &getClusters();
 
     // Add or Remove dimensions
     void addDimension(int dimension);
@@ -52,9 +52,8 @@ public:
     bool operator<(const Subspace &s2) const;
 
     //Setters
-    void setClusters(map<int, Cluster>& clusters);
-    void setClusters(vector<Cluster>& clustering);
-
+    void setClusters(map<int, Cluster> &clusters);
+    void setClusters(vector<Cluster> &clustering);
 
     void insertCluster(Cluster cluster);
     void deleteCluster(int clusterId);

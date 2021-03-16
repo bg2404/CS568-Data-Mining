@@ -21,10 +21,10 @@ std::string trim(string s) {
 ReadInput::ReadInput(string file) {
     inputFile.open(file, ios::in);
 
-    if(!inputFile.is_open())
-	   cout << "404 File: " << file << " not found!!\n";
+    if (!inputFile.is_open())
+        cout << "404 File: " << file << " not found!!\n";
     else
-	    cout << "Opening File: " << file << " ....\n";
+        cout << "Opening File: " << file << " ....\n";
 }
 
 ReadInput::~ReadInput() {

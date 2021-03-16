@@ -5,8 +5,7 @@
 
 using namespace std;
 
-vector<int> BitsUtil::orVectors(vector<int> &a, vector<int> &b)
-{
+vector<int> BitsUtil::orVectors(vector<int> &a, vector<int> &b) {
     vector<int> result;
     int n = min(a.size(), b.size());
     if (n == (int)a.size())
@@ -19,8 +18,7 @@ vector<int> BitsUtil::orVectors(vector<int> &a, vector<int> &b)
     return result;
 }
 
-int BitsUtil::intersection(vector<int> &a, vector<int> &b)
-{
+int BitsUtil::intersection(vector<int> &a, vector<int> &b) {
     int n = min(a.size(), b.size());
     int cnt = 0;
     for (int i = 0; i < n; i++)

@@ -16,24 +16,20 @@
 
 using namespace std;
 
-struct point 
-{
-	int id, neighCount, clusterId;
+struct point {
+    int id, neighCount, clusterId;
 
-	point(int id, int neighCount, int clusterId)
-	{
-		this -> id = id;
-		this -> neighCount = neighCount;
-		this -> clusterId = clusterId;
-	}
-    bool operator<(const point& t) const
-    { 
-        return (this->id < t.id); 
-    } 
+    point(int id, int neighCount, int clusterId) {
+        this->id = id;
+        this->neighCount = neighCount;
+        this->clusterId = clusterId;
+    }
+    bool operator<(const point &t) const {
+        return (this->id < t.id);
+    }
 };
 
-class INCRDBSCAN
-{
+class INCRDBSCAN {
     Relation<double> m_points;
     vector<double> m_point;
     double m_eps;
@@ -46,11 +42,11 @@ class INCRDBSCAN
     vector<point> getAndDecrementNeighbourhood(int *pCid);
     vector<point> getPointsLostCore(vector<point> epsilonNeighbourhood);
     int getNearestCorePointClusterId(point p);
-    void addPointsToCheck(point p,set<point> &pointsToCheck);
-    double dist(vector<double>&, vector<double>&);
+    void addPointsToCheck(point p, set<point> &pointsToCheck);
+    double dist(vector<double> &, vector<double> &);
 
-    public:
-    INCRDBSCAN(vector<double> point, double eps,uint minPts,Relation<double> points,Subspace &subspace, int id,map<vector<double>,int> ids);
+   public:
+    INCRDBSCAN(vector<double> point, double eps, uint minPts, Relation<double> points, Subspace &subspace, int id, map<vector<double>, int> ids);
     Subspace Insert();
     Subspace Delete();
 };

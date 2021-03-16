@@ -1,6 +1,8 @@
 ## SUBCLU Static Implementation
+
 This is the static C++ implementation of the SUBCLU algorithm.  
-To **run**   
+To **run**
+
 ```
       make
       ./subclu help
@@ -8,17 +10,20 @@ To **run**
 ```
 
 Dependencies for **testing**
+
 1. sklearn `pip3 install scikit-learn`
-2. numpy  `pip3 install numpy`
+2. numpy `pip3 install numpy`
 3. matplotlib `pip3 install matplotlib`
 
-To **test** the results  
+To **test** the results
+
 ```
       python3 silhoutte.py
       python3 confusion_matrix.py
 ```
 
-To **visualize** the results  
+To **visualize** the results
+
 ```
       python3 visualize.py {subspace result}
 ```
