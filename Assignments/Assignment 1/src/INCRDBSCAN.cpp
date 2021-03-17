@@ -164,13 +164,13 @@ Subspace INCRDBSCAN::Delete() {
 
     // cluster of point to delete
     int Cid = noiseClusterId;
-    int threshold = 2;
+    int threshold = 10;
 
     //find epsilon neighbourhood and delete point
     vector<point> epsilon_neighbourhood = getAndDecrementNeighbourhood(&Cid);
 
     //Case1: Core Point
-    if (epsilon_neighbourhood.size() >= m_minPts) {
+    if (epsilon_neighbourhood.size() +1 >= m_minPts) {
         for (auto p : epsilon_neighbourhood) {
             if ((uint)p.neighCount < m_minPts) {
                 //delete point
@@ -220,24 +220,39 @@ Subspace INCRDBSCAN::Delete() {
     //increment if potential split
     if (Cid != noiseClusterId && potentialSplit) {
         clusters[Cid].incrementSplit();
+        cout<<Cid<<" "<<clusters[Cid].getSplit()<<"&\n";
     }
     //check for split condition and run static DBSCAN
     if (Cid != noiseClusterId && clusters[Cid].getSplit() >= threshold) {
+        cout<<clusters[Cid].getSplit()<<"!\n";
         Relation<double> dataBase;
         vector<int> idKeys = clusters[Cid].getIdKeys();
         for (int i : idKeys) {
             dataBase.push_back(m_points[i]);
         }
-        DBSCAN dbscan = DBSCAN(dataBase, m_subspace, m_eps, m_minPts, m_ids);
-        vector<Cluster> splitClusters = dbscan.getClusters();
 
-        //update if the clusters split
-        if (splitClusters.size() > 1) {
-            clusters.erase(Cid);
-            for (Cluster cluster : splitClusters) {
-                int clusterId = cluster.getClusterId();
-                clusters.insert(make_pair(clusterId, cluster));
+        if(dataBase.size())
+        {    
+            DBSCAN dbscan = DBSCAN(dataBase, m_subspace, m_eps, m_minPts, m_ids);
+            vector<Cluster> splitClusters = dbscan.getClusters();
+
+            //update if the clusters split
+            if (splitClusters.size() > 1) {
+                clusters.erase(Cid);
+                for (Cluster cluster : splitClusters) {
+                    int clusterId = cluster.getClusterId();
+                    clusters.insert(make_pair(clusterId, cluster));
+                }
             }
+            else 
+            {
+                clusters[Cid].resetSplit();
+                cout<<clusters[Cid].getSplit()<<"!1\n";
+            }
+        }
+        else 
+        {
+            clusters.erase(Cid);
         }
     }
 

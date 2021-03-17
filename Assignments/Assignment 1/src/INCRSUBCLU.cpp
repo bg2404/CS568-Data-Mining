@@ -118,8 +118,6 @@ void INCRSUBCLU::run() {
 
 
 			subspaces.find(currSubspace.getDimensions())->second = currSubspace;
-			cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
-			currSubspace.print();
 
             //         	cout << "------------------------------\n";
             //         	cout << "Current Subspace: \n";

@@ -29,6 +29,7 @@ Cluster::Cluster(const Cluster &t) {
 Cluster::Cluster() {
     this->name = "";
     this->clusterId = -1;
+    this->Split = 0;
 }
 
 int Cluster::size() {
@@ -59,7 +60,7 @@ bool Cluster::isNoise() {
 }
 
 int Cluster::getSplit() {
-    return Split;
+    return this->Split;
 }
 
 void Cluster::setName(string &name) {
@@ -110,14 +111,15 @@ Cluster &Cluster::operator=(const Cluster &t) {
         this->clusterId = t.clusterId;
         this->noise = t.noise;
         this->mean = t.mean;
+        this->Split = t.Split;
     }
     return *this;
 }
 
 void Cluster::incrementSplit() {
-    Split++;
+    this->Split++;
 }
 
 void Cluster::resetSplit() {
-    Split = 0;
+    this->Split = 0;
 }
