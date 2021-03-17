@@ -4,21 +4,15 @@
 #include <vector>
 
 #include "Cluster.h"
-#include "DBSCAN.h"
-#include "ReadInput.h"
-#include "Relation.h"
-#include "SUBCLU.h"
 #include "Subspace.h"
-#include "INCRDBSCAN.h"
+#include "SUBCLU.h"
 #include "INCRSUBCLU.h"
 
 using namespace std;
 
-map<vector<double>, int> dbids;
-map<int, int> idc;
-
 int main(int argc, char **argv) {
-    if (argc != 4) {
+    // Arguments Parsing
+    if (argc != 5) {
         if (argc == 2) {
             string help = argv[1];
             if (help == "help") {
@@ -28,34 +22,26 @@ int main(int argc, char **argv) {
                 cout << "Iris-Unlabeled.csv 4 0.4\n";
             }
         }
-        cout << "Usage: ./subclu {file} {min points} {epsilon}\n";
+        cout << "Usage: ./subclu {file} {update file} {min points} {epsilon}\n";
         return 0;
     }
-
     string file = argv[1];
-    int mnPnts = stoi(argv[2]);
-    double epsilon = stod(argv[3]);
+    string updateFile = argv[2];
+    int mnPnts = stoi(argv[3]);
+    double epsilon = stod(argv[4]);
 
+
+    // Running SUBCLU
     SUBCLU subclu(file, mnPnts, epsilon);
-
     cout << "Starting SUBCLU run with file = " << file << " ,mnPnts = " << mnPnts << " ,epsilon = " << epsilon << " .....\n";
     map<Subspace, vector<Cluster>> result = subclu.run();
 
 
-    // Testing and Visualisation
-    ReadInput reader(file);
-    Relation<double> dataBase = reader.read();
 
-    if (!dataBase.size())
-        return 0;
-
-
-    for (int i = 0; i < (int)(dataBase.size()); i++) {
-        dbids[dataBase[i]] = i;
-    }
-
-    // printing Subspace*.csv files
+    // Printing Subspace*.csv files
     for (auto clustering : result) {
+	
+	// creating file name
         string file = "Subspace";
         Subspace subspace = clustering.first;
         for (auto d : subspace.getDimensions()) {
@@ -63,6 +49,7 @@ int main(int argc, char **argv) {
         }
         file = file + ".csv";
 
+	// Opening file and writing the Clusters found
         fstream p_file;
         p_file.open(file, ios::out);
 
@@ -82,13 +69,15 @@ int main(int argc, char **argv) {
     }
 
     
-    // incremental subclu
-    cout << "STARTING INCRSUBCLU...............\n";
-    INCRSUBCLU incrsubclu(file, "test_incr.txt", mnPnts, epsilon);
+    // Running INCRSUBCLU
+    cout << "###########################################################################################################\n";
+    cout << "Starting INCRSUBCLU run with file = " << file << " ,mnPnts = " << mnPnts << " ,epsilon = " << epsilon << " .....\n";
+    INCRSUBCLU incrsubclu(file, updateFile, mnPnts, epsilon);
     incrsubclu.run();
+
+    /*
+    // Printing Incremental Results
     incrsubclu.print();
-    
-
-
+    */
     return 0;
 }

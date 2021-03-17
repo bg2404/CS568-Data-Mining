@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 
+#include "BitsUtil.h"
 #include "Cluster.h"
 
 using namespace std;

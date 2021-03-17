@@ -9,6 +9,7 @@
 #include "Cluster.h"
 #include "DBSCAN.h"
 #include "Relation.h"
+#include "ReadInput.h"
 #include "Subspace.h"
 
 class SUBCLU {

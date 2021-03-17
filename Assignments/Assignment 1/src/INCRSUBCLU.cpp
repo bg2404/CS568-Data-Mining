@@ -9,14 +9,14 @@
 #include <vector>
 
 #include "Cluster.h"
-#include "INCRDBSCAN.h"
-#include "INCRSUBCLU.h"
-#include "ReadInput.h"
 #include "Relation.h"
 #include "Subspace.h"
+#include "ReadInput.h"
+#include "INCRDBSCAN.h"
 
 using namespace std;
 
+// Integer to Binary String
 string to_binary(int num) {
     if (num == 0) {
         return "0";
@@ -30,7 +30,6 @@ string to_binary(int num) {
             }
             num >>= 1;
         }
-        //reverse(ret.begin(), ret.end());
         return ret;
     }
 }
@@ -70,13 +69,6 @@ INCRSUBCLU::INCRSUBCLU(string databaseFilename, string updatesFilename, int minP
     ReadInput reader_2(updatesFilename);
     this->updates = reader_2.read();
 
-    cout << "Update file\n";
-    for(auto update : updates) {
-	    for(auto x : update)
-		    cout << x << ' ';
-	    cout << '\n';
-    }
-
     for (int i = 0; i < (int)(dataBase.size()); i++) {
         (this->dbids)[dataBase[i]] = i;
     } 
@@ -87,12 +79,23 @@ INCRSUBCLU::INCRSUBCLU(string databaseFilename, string updatesFilename, int minP
 
 void INCRSUBCLU::run() {
 	for (vector<double> update : this->updates) {
-
+		// extract update point
 		int size = (int)update.size() - 1;
 		int type = update[size];
 		update.pop_back();
-		set<vector<int>> remainingSubspaces = allSubspaces;
 
+		
+		cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% \n";
+		if(type == -1)
+			cout << "Deleting: ";
+		else
+			cout << "Inserting: ";
+		for(double x : update)
+			cout << x << ' ';
+		cout << '\n';
+
+		// Start Running INCRSUBCLU
+		set<vector<int>> remainingSubspaces = allSubspaces;
 		if (size <= 1) {
 			cout << "Error: INCRSUBCLU needs Multivariate Data";
 			return;
@@ -115,6 +118,11 @@ void INCRSUBCLU::run() {
 
 			subspaces[(currSubspace.getDimensions())] = currSubspace;
 
+                    	cout << "------------------------------\n";
+                    	cout << "Current Subspace: \n";
+			currSubspace.print();
+                    	cout << "------------------------------\n";
+
 			if(incrdb.getChange())
 			{
 				candidates.push_back(Subspace(currSubspace.getDimensions()));
@@ -127,6 +135,16 @@ void INCRSUBCLU::run() {
 		for (int dimensionality = 2; dimensionality <= size; dimensionality++) {
 			if (!candidates.empty()) {
 				candidates = generateSubspaceCandidates(candidates);
+				cout << "////////////////////////////////////////////////\n";
+				cout << "Candidate Subspaces: \n";
+				for (auto x : candidates) {
+					for (auto y : x.getDimensions())
+						cout << y;
+					cout << ' ';
+				}
+				cout << '\n';
+
+				cout << "////////////////////////////////////////////////\n";
 				vector<Subspace> nextCandidates;	
 				for (Subspace candidate : candidates) {
 					Subspace currSubspace = subspaces[candidate.getDimensions()];
@@ -138,6 +156,10 @@ void INCRSUBCLU::run() {
 						currSubspace = incrdb.Insert();
 
 					subspaces[(currSubspace.getDimensions())] = currSubspace;
+					cout << "------------------------------\n";
+					cout << "Current Subspace: \n";
+					currSubspace.print();
+					cout << "------------------------------\n";
 
 					if(incrdb.getChange())
 					{

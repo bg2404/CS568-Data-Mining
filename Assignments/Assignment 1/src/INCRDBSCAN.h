@@ -8,6 +8,7 @@
 #include "Cluster.h"
 #include "Relation.h"
 #include "Subspace.h"
+#include "DBSCAN.h"
 
 #define SUCCESS 0
 #define UNCLASSIFIED -1

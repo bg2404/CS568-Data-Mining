@@ -7,9 +7,10 @@
 #include <vector>
 
 #include "Cluster.h"
-#include "DBSCAN.h"
 #include "Relation.h"
 #include "Subspace.h"
+#include "ReadInput.h"
+#include "INCRDBSCAN.h"
 
 class INCRSUBCLU {
    protected:

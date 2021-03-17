@@ -122,14 +122,22 @@ void Subspace::print() {
     for (auto x : this->dimensions)
         cout << x;
     cout << '\n';
+
     for (auto it : clusters) {
-        cout << "Cluster_" << it.first << " ";
+        cout << "Cluster_" << it.first << ": ";
         Cluster cluster = it.second;
+
+	if(cluster.isNoise())
+		cout << "(Noise)\n";
+	else
+		cout << "\n";
+
+	cout << "ids: ";
         map<int, int> ids = cluster.getIds();
-        cout << "Is Noise:" << cluster.isNoise() << "\n";
         for (pair<int, int> point : ids) {
-            cout << point.first << " " << point.second << "\n";
+            cout << point.first << " "; 
         }
+	cout << '\n';
     }
 }
 

@@ -28,8 +28,9 @@ ReadInput::ReadInput(string file) {
 }
 
 ReadInput::~ReadInput() {
+    if (inputFile.is_open())
+    	cout << "Closing File.....\n";
     inputFile.close();
-    cout << "Closing File.....\n";
 }
 
 // Assumption space separated File
@@ -113,7 +114,6 @@ Subspace ReadInput::readSubspace(vector<int>& dimensions) {
 			cluster.setSplit(split);
 			subspace.insertCluster(cluster);
 		}
-		subspace.print();
 	}
 	return subspace;
 }
