@@ -68,12 +68,14 @@ int main(int argc, char **argv) {
         p_file.close();
     }
 
+
     
     // Running INCRSUBCLU
     cout << "###########################################################################################################\n";
     cout << "Starting INCRSUBCLU run with file = " << file << " ,mnPnts = " << mnPnts << " ,epsilon = " << epsilon << " .....\n";
     INCRSUBCLU incrsubclu(file, updateFile, mnPnts, epsilon);
     incrsubclu.run();
+    incrsubclu.print();
 
     /*
     // Printing Incremental Results

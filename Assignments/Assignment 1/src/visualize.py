@@ -53,7 +53,7 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print("Usage: ./subclu {{file}}")
 
-    else:
+    elif len(sys.argv) == 2:
         datafile_name = sys.argv[1]
         df = pd.read_csv(sys.argv[1], sep='\s+', header=None)
 
@@ -101,3 +101,53 @@ if __name__ == '__main__':
             print("Compatibility Issue: Works only for 1D, 2D, 3D data.")
 
         plt.show()
+    else:
+        database_filename = sys.argv[1]
+        subspace_filename = sys.argv[2]
+        dims = 0
+        names = []
+        curr_dim = '1'
+        for c in subspace_filename:
+            if c == '1':
+                names.append(cur_dim)
+            cur_dim = chr(ord(cur_dim) + 1)
+        names.appemd('label')
+        df = pd.DataFrame(columns=names)
+        db_file = open(database_filename, 'r')
+        db = db_file.readlines()
+        db_file.close()
+        ss_file = open(subspace_filename, 'r')
+        ss = ss_file.readlines()
+        ss_file.close()
+        for i in range(len(ss)):
+            line = list(map(int, ss[i].split()))
+            cid = line[0]
+            num = line[3]
+            for j in range(num):
+                line = list(map(int, ss[i+j].split()))
+                idx = line[0]
+                point = list(map(int, db[idx].split()))
+                point_ss = []
+                for name in names[:-1]:
+                    point_ss.append(point[int(name)-1])
+                point_ss.append(cid)
+                df.loc[len(df.index)] = point_ss
+            i = i + j
+        dims = len(names)
+        if dims == 4:
+            fig = plt.figure(figsize=(12, 8))
+            ax = fig.add_subplot(111, projection='3d')
+            plot3D(ax, df, "label", subspace_filename[:-4])
+
+        elif dims == 3:
+            fig = plt.figure(figsize=(12, 8))
+            ax = fig.add_subplot(111)
+            plot2D(ax, df, "label", subspace_filename[:-4])
+
+        elif dims == 2:
+            fig = plt.figure(figsize=(12, 8))
+            ax = fig.add_subplot(111)
+            plot1D(ax, df, "label", subspace_filename[:-4])
+
+        else:
+            print("Compatibility Issue: Works only for 1D, 2D, 3D data.")

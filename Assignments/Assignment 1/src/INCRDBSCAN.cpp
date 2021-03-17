@@ -65,6 +65,7 @@ Subspace INCRDBSCAN::Insert() {
 
         //Case2.1 : all core points in the neighbourhood are noise
         if (cluster_core == 0 && noise_core > 0) {
+
             map<int, int> ids;
             vector<double> mean;
 
@@ -250,9 +251,7 @@ vector<point> INCRDBSCAN::getAndIncrementNeighbourhood() {
             if (i != m_ids[m_point] && dist(m_point, m_points[i]) <= m_eps) {
                 id.second++;
                 neighbourhood.push_back(point(m_ids[m_points[i]], id.second, cluster.first));
-            } else if (i == m_ids[m_point]) {
-                clusters[cluster.first].deleteId(i);
-            }
+            } 
         }
     }
     return neighbourhood;

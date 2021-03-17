@@ -60,7 +60,6 @@ Relation<double> ReadInput::read() {
         data.push_back(row);
         row.clear();
     }
-    data.pop_back();
     return data;
 }
 

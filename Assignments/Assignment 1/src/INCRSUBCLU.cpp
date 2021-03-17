@@ -49,8 +49,7 @@ void INCRSUBCLU::retrieveSubspaces(int n) {
 		file = file + d + ".csv";
 		//Read Subspace File
 		ReadInput reader(file);
-		Subspace subspace = reader.readSubspace(dimensions);
-		
+		Subspace subspace = reader.readSubspace(dimensions);		
 		(this -> subspaces).insert(make_pair(dimensions, subspace));
 		allSubspaces.insert(dimensions);
 	}
@@ -70,7 +69,7 @@ INCRSUBCLU::INCRSUBCLU(string databaseFilename, string updatesFilename, int minP
     this->updates = reader_2.read();
 
     for (int i = 0; i < (int)(dataBase.size()); i++) {
-        (this->dbids)[dataBase[i]] = i;
+        (this->dbids).insert(make_pair(dataBase[i],i));
     } 
 
     retrieveSubspaces(((this -> updates)[0]).size() - 1);
@@ -85,14 +84,14 @@ void INCRSUBCLU::run() {
 		update.pop_back();
 
 		
-		cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% \n";
-		if(type == -1)
-			cout << "Deleting: ";
-		else
-			cout << "Inserting: ";
-		for(double x : update)
-			cout << x << ' ';
-		cout << '\n';
+		// cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% \n";
+		// if(type == -1)
+		// 	cout << "Deleting: ";
+		// else
+		// 	cout << "Inserting: ";
+		// for(double x : update)
+		// 	cout << x << ' ';
+		// cout << '\n';
 
 		// Start Running INCRSUBCLU
 		set<vector<int>> remainingSubspaces = allSubspaces;
@@ -103,11 +102,13 @@ void INCRSUBCLU::run() {
 
 		vector<Subspace> candidates;
 		// 1-Dimensionality Clustering
-		cout << "Finding clusters in 1-D Subspaces by running INCRDBSCAN....\n";
+		// cout << "Finding clusters in 1-D Subspaces by running INCRDBSCAN....\n";
 		for (int dimension = 0; dimension < size; dimension++) {
 			Subspace currSubspace(dimension);
-			currSubspace = subspaces[(currSubspace.getDimensions())];
+			currSubspace = subspaces.find(currSubspace.getDimensions())->second;
+			// cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@1\n";
 
+			// currSubspace.print();
 			INCRDBSCAN incrdb(update, this -> epsilon, this -> minPnts, this -> dataBase, currSubspace, (this -> dataBase).size(), (this -> dbids));
 
 			if(type == -1)
@@ -116,12 +117,14 @@ void INCRSUBCLU::run() {
 				currSubspace = incrdb.Insert();
 
 
-			subspaces[(currSubspace.getDimensions())] = currSubspace;
-
-                    	cout << "------------------------------\n";
-                    	cout << "Current Subspace: \n";
+			subspaces.find(currSubspace.getDimensions())->second = currSubspace;
+			cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
 			currSubspace.print();
-                    	cout << "------------------------------\n";
+
+            //         	cout << "------------------------------\n";
+            //         	cout << "Current Subspace: \n";
+			// currSubspace.print();
+            //         	cout << "------------------------------\n";
 
 			if(incrdb.getChange())
 			{
@@ -130,25 +133,25 @@ void INCRSUBCLU::run() {
 			}
 		}
 
-		cout << "Apriori Buildup starting to identify higher dimension clusters....\n";
+		// cout << "Apriori Buildup starting to identify higher dimension clusters....\n";
 		// Apriori BuildUp
 		for (int dimensionality = 2; dimensionality <= size; dimensionality++) {
 			if (!candidates.empty()) {
 				candidates = generateSubspaceCandidates(candidates);
 
-				cout << "////////////////////////////////////////////////\n";
-				cout << "Candidate Subspaces: \n";
-				for (auto x : candidates) {
-					for (auto y : x.getDimensions())
-						cout << y;
-					cout << ' ';
-				}
-				cout << '\n';
-				cout << "////////////////////////////////////////////////\n";
+				// cout << "////////////////////////////////////////////////\n";
+				// cout << "Candidate Subspaces: \n";
+				// for (auto x : candidates) {
+				// 	for (auto y : x.getDimensions())
+				// 		cout << y;
+				// 	cout << ' ';
+				// }
+				// cout << '\n';
+				// cout << "////////////////////////////////////////////////\n";
 
 				vector<Subspace> nextCandidates;	
 				for (Subspace candidate : candidates) {
-					Subspace currSubspace = subspaces[candidate.getDimensions()];
+					Subspace currSubspace = subspaces.find(candidate.getDimensions())->second;
 					INCRDBSCAN incrdb(update, this -> epsilon, this -> minPnts, this -> dataBase, currSubspace, (this -> dataBase).size(), (this -> dbids));
 
 					if(type == -1)
@@ -156,18 +159,19 @@ void INCRSUBCLU::run() {
 					else
 						currSubspace = incrdb.Insert();
 
-					subspaces[(currSubspace.getDimensions())] = currSubspace;
 
-					cout << "------------------------------\n";
-					cout << "Current Subspace: \n";
-					currSubspace.print();
-					cout << "------------------------------\n";
+					// cout << "------------------------------\n";
+					// cout << "Current Subspace: \n";
+					// currSubspace.print();
+					// cout << "------------------------------\n";
 
 					if(incrdb.getChange())
 					{
 						nextCandidates.push_back(candidate);
 						remainingSubspaces.erase(candidate.getDimensions());
 					}
+
+					subspaces.find(currSubspace.getDimensions())->second = currSubspace;
 				}
 				
 				candidates = nextCandidates;
@@ -181,7 +185,7 @@ void INCRSUBCLU::run() {
 		//better way to delete point from the cluster
 		for(vector<int> dimensions : remainingSubspaces)
 		{
-			Subspace subspace = subspaces[dimensions];
+			Subspace subspace = subspaces.find(dimensions)->second;
 			if(type == 1)
 			{
 				int noiseClusterId = subspace.getNoiseClusterId();
@@ -201,17 +205,19 @@ void INCRSUBCLU::run() {
 				}
 			}
 
-			subspaces[dimensions] = subspace;
+			subspaces.find(dimensions)->second = subspace;
+		}
+
+		//adding points to database
+		if(type==1)
+		{
+			this->dbids.insert(make_pair(update,this->dataBase.size()));
+			this->dataBase.push_back(update);
 		}
 	}
 }
 
 void INCRSUBCLU::print(){
-	cout << "PRINTING..........\n";
-	for(auto subspace : (this -> subspaces)) {
-		subspace.second.print();
-		cout << "----------------------------\n";
-	}
 
 	// printing Subspace*.csv files
     for (pair<vector<int>,Subspace> p : subspaces) {
@@ -239,6 +245,8 @@ void INCRSUBCLU::print(){
         }
         p_file.close();
     }
+
+	
 
 }
 
