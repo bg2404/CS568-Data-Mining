@@ -135,6 +135,7 @@ void INCRSUBCLU::run() {
 		for (int dimensionality = 2; dimensionality <= size; dimensionality++) {
 			if (!candidates.empty()) {
 				candidates = generateSubspaceCandidates(candidates);
+
 				cout << "////////////////////////////////////////////////\n";
 				cout << "Candidate Subspaces: \n";
 				for (auto x : candidates) {
@@ -143,8 +144,8 @@ void INCRSUBCLU::run() {
 					cout << ' ';
 				}
 				cout << '\n';
-
 				cout << "////////////////////////////////////////////////\n";
+
 				vector<Subspace> nextCandidates;	
 				for (Subspace candidate : candidates) {
 					Subspace currSubspace = subspaces[candidate.getDimensions()];
@@ -156,6 +157,7 @@ void INCRSUBCLU::run() {
 						currSubspace = incrdb.Insert();
 
 					subspaces[(currSubspace.getDimensions())] = currSubspace;
+
 					cout << "------------------------------\n";
 					cout << "Current Subspace: \n";
 					currSubspace.print();
@@ -175,7 +177,7 @@ void INCRSUBCLU::run() {
 		}
 
 		//add noise point or simply deleting the point from pruned subspace 
-		//TODO find size of epsilong neighbourhood in the cluster or not
+		//TODO find size of epsilon neighbourhood in the cluster or not
 		//better way to delete point from the cluster
 		for(vector<int> dimensions : remainingSubspaces)
 		{
