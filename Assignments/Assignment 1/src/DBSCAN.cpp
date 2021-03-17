@@ -66,12 +66,12 @@ vector<Cluster> DBSCAN::getClusters() {
 
         for (int i = 0; i < (int)m_numPoints; ++i) {
             if (m_clusterIDs[i] - 1 >= 0) {
-                cluster_ids[m_clusterIDs[i] - 1].push_back(make_pair(m_ids[m_points[i]], m_neighCounts[i] - 1));
+                cluster_ids[m_clusterIDs[i] - 1].push_back(make_pair(m_ids[m_points[i]], m_neighCounts[i]));
                 for (int j = 0; j < dim; ++j)
                     mean[m_clusterIDs[i] - 1][j] += m_points[i][j];
             } else {
                 assert(m_clusterIDs[i] == -2);
-                cluster_ids[clusterID].push_back(make_pair(m_ids[m_points[i]], m_neighCounts[i] - 1));
+                cluster_ids[clusterID].push_back(make_pair(m_ids[m_points[i]], m_neighCounts[i]));
                 for (int j = 0; j < dim; ++j)
                     mean[clusterID][j] += m_points[i][j];
             }

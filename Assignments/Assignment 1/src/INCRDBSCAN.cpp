@@ -38,7 +38,7 @@ Subspace INCRDBSCAN::Insert() {
     vector<point> epsilon_neighbourhood = getAndIncrementNeighbourhood();
 
     // find if there exist a core point or not
-    core_p = ((uint)epsilon_neighbourhood.size() >= m_minPts);
+    core_p = ((uint)(epsilon_neighbourhood.size() + 1) >= m_minPts);
     has_core = core_p;
     for (auto neighPoint : epsilon_neighbourhood)
         has_core |= (neighPoint.neighCount >= (int)m_minPts);
@@ -46,13 +46,13 @@ Subspace INCRDBSCAN::Insert() {
     //Case1: no core point in the neighbourhood
     if (!has_core) {
         // add point to noise
-        clusters[noiseClusterId].insertId(m_id, epsilon_neighbourhood.size());
+        clusters[noiseClusterId].insertId(m_id, epsilon_neighbourhood.size() + 1);
         change = true;
     }
     //Case2: some core points in the neighbourhood
     else {
         // count each kind of core points in the neighbourhood
-        int noise_core = 0;
+        int noise_core = core_p;
         int cluster_core = 0;
         for (point p : epsilon_neighbourhood) {
             if (p.neighCount >= (int)m_minPts) {
@@ -77,9 +77,13 @@ Subspace INCRDBSCAN::Insert() {
                 }
             }
 
+	    //insert the new point itself
+	    ids.insert(make_pair(m_id, epsilon_neighbourhood.size() + 1));
+
             //Create new cluster of all noise points
             (Cluster::cnt)++;
             Cluster cluster = Cluster("Cluster_" + to_string(Cluster::cnt), ids, false, Cluster::cnt, mean);
+	    
 
             //Add the new cluster to the subspace
             clusters[Cluster::cnt] = cluster;
@@ -97,10 +101,10 @@ Subspace INCRDBSCAN::Insert() {
             if (neighCores.size() == 1) {
                 //add the point to cluster
                 int clusterId = *neighCores.begin();
-                clusters[clusterId].insertId(m_id, epsilon_neighbourhood.size());
+                clusters[clusterId].insertId(m_id, epsilon_neighbourhood.size() + 1);
 
                 //add all the neighbourhood noise points as well
-                if (epsilon_neighbourhood.size() >= m_minPts) {
+                if (epsilon_neighbourhood.size() + 1 >= m_minPts) {
                     for (point p : epsilon_neighbourhood) {
                         if (p.clusterId == noiseClusterId) {
                             clusters[noiseClusterId].deleteId(p.id);
@@ -112,9 +116,9 @@ Subspace INCRDBSCAN::Insert() {
             }
             //Case2.3: Merge Clusters if new point is core else add the point to an arbitary cluster
             else {
-                if (epsilon_neighbourhood.size() < m_minPts) {
+                if (epsilon_neighbourhood.size() + 1 < m_minPts) {
                     int clusterId = *neighCores.begin();
-                    clusters[clusterId].insertId(m_id, epsilon_neighbourhood.size());
+                    clusters[clusterId].insertId(m_id, epsilon_neighbourhood.size() + 1);
                 } else {
                     map<int, int> ids;
                     vector<double> mean;
@@ -132,7 +136,7 @@ Subspace INCRDBSCAN::Insert() {
                     Cluster cluster = Cluster("Cluster_" + to_string(Cluster::cnt), ids, false, Cluster::cnt, mean);
 
                     // add new point into cluster
-                    cluster.insertId(m_id, epsilon_neighbourhood.size());
+                    cluster.insertId(m_id, epsilon_neighbourhood.size() + 1);
 
                     // noise points in the neighbourhood to new cluster
                     for (point p : epsilon_neighbourhood) {
