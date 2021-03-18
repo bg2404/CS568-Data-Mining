@@ -51,6 +51,7 @@ class Subspace {
 
     //defining < operator
     bool operator<(const Subspace &s2) const;
+    Subspace & operator=(const Subspace &s2);
 
     //Setters
     void setClusters(map<int, Cluster> &clusters);

@@ -164,7 +164,7 @@ Subspace INCRDBSCAN::Delete() {
 
     // cluster of point to delete
     int Cid = noiseClusterId;
-    int threshold = 10;
+    int threshold = 3;
 
     //find epsilon neighbourhood and delete point
     vector<point> epsilon_neighbourhood = getAndDecrementNeighbourhood(&Cid);
@@ -219,12 +219,11 @@ Subspace INCRDBSCAN::Delete() {
 
     //increment if potential split
     if (Cid != noiseClusterId && potentialSplit) {
-        clusters[Cid].incrementSplit();
-        cout<<Cid<<" "<<clusters[Cid].getSplit()<<"&\n";
+        clusters.find(Cid)->second.incrementSplit();
     }
     //check for split condition and run static DBSCAN
     if (Cid != noiseClusterId && clusters[Cid].getSplit() >= threshold) {
-        cout<<clusters[Cid].getSplit()<<"!\n";
+        // cout<<clusters[Cid].getSplit()<<"!\n";
         Relation<double> dataBase;
         vector<int> idKeys = clusters[Cid].getIdKeys();
         for (int i : idKeys) {
@@ -247,7 +246,7 @@ Subspace INCRDBSCAN::Delete() {
             else 
             {
                 clusters[Cid].resetSplit();
-                cout<<clusters[Cid].getSplit()<<"!1\n";
+                // cout<<clusters[Cid].getSplit()<<"!1\n";
             }
         }
         else 

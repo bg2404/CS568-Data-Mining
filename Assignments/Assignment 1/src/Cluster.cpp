@@ -23,7 +23,7 @@ Cluster::Cluster(const Cluster &t) {
     this->clusterId = t.clusterId;
     this->noise = t.noise;
     this->mean = t.mean;
-    this->Split = this->Split;
+    this->Split = t.Split;
 }
 
 Cluster::Cluster() {

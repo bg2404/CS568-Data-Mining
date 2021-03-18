@@ -23,13 +23,13 @@ std::string trim(string s) {
 ReadInput::ReadInput(string file) {
     inputFile.open(file, ios::in);
 
-    if (inputFile.is_open())
-        cout << "Opening File: " << file << " ....\n";
+    // if (inputFile.is_open())
+    //     cout << "Opening File: " << file << " ....\n";
 }
 
 ReadInput::~ReadInput() {
-    if (inputFile.is_open())
-    	cout << "Closing File.....\n";
+    // if (inputFile.is_open())
+    // 	cout << "Closing File.....\n";
     inputFile.close();
 }
 
@@ -114,5 +114,7 @@ Subspace ReadInput::readSubspace(vector<int>& dimensions) {
 			subspace.insertCluster(cluster);
 		}
 	}
+
+
 	return subspace;
 }

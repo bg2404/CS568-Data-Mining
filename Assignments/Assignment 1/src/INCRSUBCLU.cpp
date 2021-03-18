@@ -51,6 +51,11 @@ void INCRSUBCLU::retrieveSubspaces(int n) {
 		ReadInput reader(file);
 		Subspace subspace = reader.readSubspace(dimensions);		
 		(this -> subspaces).insert(make_pair(dimensions, subspace));
+		map<int,Cluster> &clusters = subspace.getClusters();
+		for(auto it : clusters)
+		{
+			it.second.setSplit(0);
+		}
 		allSubspaces.insert(dimensions);
 	}
 }
@@ -83,7 +88,7 @@ void INCRSUBCLU::run() {
 		int type = update[size];
 		update.pop_back();
 
-		
+	
 		// cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% \n";
 		// if(type == -1)
 		// 	cout << "Deleting: ";

@@ -167,6 +167,14 @@ bool Subspace::operator<(const Subspace &s2) const {
     return false;
 }
 
+Subspace &Subspace::operator=(const Subspace &s2)
+{
+    this->dimensions = s2.dimensions;
+    this->dimensionality = s2.dimensionality;
+    this->clusters = s2.clusters;
+    return *this;
+}
+
 void Subspace::setClusters(vector<Cluster> &clustering) {
     map<int, Cluster> clusters;
 

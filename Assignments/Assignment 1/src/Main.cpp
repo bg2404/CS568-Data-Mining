@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
     // Running SUBCLU
     SUBCLU subclu(file, mnPnts, epsilon);
-    cout << "Starting SUBCLU run with file = " << file << " ,mnPnts = " << mnPnts << " ,epsilon = " << epsilon << " .....\n";
+    // cout << "Starting SUBCLU run with file = " << file << " ,mnPnts = " << mnPnts << " ,epsilon = " << epsilon << " .....\n";
     map<Subspace, vector<Cluster>> result = subclu.run();
 
 
@@ -71,8 +71,8 @@ int main(int argc, char **argv) {
 
     
     // Running INCRSUBCLU
-    cout << "###########################################################################################################\n";
-    cout << "Starting INCRSUBCLU run with file = " << file << " ,mnPnts = " << mnPnts << " ,epsilon = " << epsilon << " .....\n";
+    // cout << "###########################################################################################################\n";
+    // cout << "Starting INCRSUBCLU run with file = " << file << " ,mnPnts = " << mnPnts << " ,epsilon = " << epsilon << " .....\n";
     INCRSUBCLU incrsubclu(file, updateFile, mnPnts, epsilon);
     incrsubclu.run();
     incrsubclu.print();
