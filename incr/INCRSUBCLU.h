@@ -25,6 +25,7 @@ class INCRSUBCLU {
 
     // map instances to index
     map<vector<double>, int> dbids;
+    string databaseFilename;
 
    public:
     INCRSUBCLU(string databaseFilename, string updatesFilename, int minpnts, double epsilon, int mindim = 1);
@@ -33,6 +34,8 @@ class INCRSUBCLU {
     vector<Subspace> generateSubspaceCandidates(vector<Subspace> &subspaces);
     bool checkLower(Subspace &candidate, vector<Subspace> &subspaces);
     void print();
+    //creates new database n-databaseFilename.csv
+    void newDatabase();
 };
 
 #endif

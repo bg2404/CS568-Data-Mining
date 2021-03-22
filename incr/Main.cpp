@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
     INCRSUBCLU incrsubclu(file, updateFile, mnPnts, epsilon);
     incrsubclu.run();
     incrsubclu.print();
+    incrsubclu.newDatabase();
 
     /*
     // Printing Incremental Results

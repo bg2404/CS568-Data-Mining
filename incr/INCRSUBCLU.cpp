@@ -16,6 +16,7 @@
 
 using namespace std;
 
+set<vector<double>> to_delete;
 // Integer to Binary String
 string to_binary(int num) {
     if (num == 0) {
@@ -69,6 +70,7 @@ INCRSUBCLU::INCRSUBCLU(string databaseFilename, string updatesFilename, int minP
     //file reading
     ReadInput reader(databaseFilename);
     this->dataBase = reader.read();
+	this->databaseFilename = databaseFilename;
 
     ReadInput reader_2(updatesFilename);
     this->updates = reader_2.read();
@@ -293,4 +295,51 @@ bool INCRSUBCLU::checkLower(Subspace &candidate, vector<Subspace> &subspaces) {
     return true;
 }
 
+void INCRSUBCLU :: newDatabase()
+{
+	//make a dummy point
+	vector<double> dummy;
+	for(int i=0;i<(int)dataBase[0].size();i++)
+	dummy.push_back(0);
 
+
+	//add new points and dummy points
+	for(vector<double> update : updates)
+	{
+		int type = update.back();
+		update.pop_back();
+		
+		if(type == -1)
+		{
+			to_delete.insert(update);
+		}
+		if(type ==1)
+		{
+			dataBase.push_back(update);
+		}
+	}
+    
+	//now create the new 
+	fstream new_file;
+	new_file.open("n-"+databaseFilename,ios::out);
+	
+	//add points to new file
+	int line = 0;
+	for(vector<double> point : dataBase)
+	{
+		//check if point is to delete
+		if(to_delete.find(point) != to_delete.end())
+		point = dummy;
+
+		for(int x : point)
+		{
+			new_file<<x<<" ";
+		}
+		new_file<<"\n";
+		line++;
+	}
+
+	new_file.close();
+
+
+}
