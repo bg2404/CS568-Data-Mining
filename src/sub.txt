@@ -1,0 +1,129 @@
+Opening File: cuboid_two.csv ....
+Closing File.....
+Starting SUBCLU run with file = cuboid_two.csv ,mnPnts = 2 ,epsilon = 0.6 .....
+Finding clusters in 1-D Subspaces by running DBSCAN....
+------------------------------
+Current Subspace: 
+dimensionality = 1
+dimensions = 1
+Clusters Present
+Number of Clusters: 2
+------------------------------
+------------------------------
+Current Subspace: 
+dimensionality = 1
+dimensions = 01
+Clusters Present
+Number of Clusters: 2
+------------------------------
+------------------------------
+Current Subspace: 
+dimensionality = 1
+dimensions = 001
+Clusters Present
+Number of Clusters: 2
+------------------------------
+Apriori Buildup starting to identify higher dimension clusters....
+////////////////////////////////////////////////
+Candidate Subspaces: 
+11 101 011 
+////////////////////////////////////////////////
+------------------------------
+Current Subspace: 
+dimensionality = 2
+dimensions = 11
+Best Subspace: 1
+Clusters Present
+Number of Clusters: 2
+------------------------------
+------------------------------
+Current Subspace: 
+dimensionality = 2
+dimensions = 101
+Best Subspace: 1
+Clusters Present
+Number of Clusters: 2
+------------------------------
+------------------------------
+Current Subspace: 
+dimensionality = 2
+dimensions = 011
+Best Subspace: 01
+Clusters Present
+Number of Clusters: 2
+------------------------------
+////////////////////////////////////////////////
+Candidate Subspaces: 
+111 
+////////////////////////////////////////////////
+------------------------------
+Current Subspace: 
+dimensionality = 3
+dimensions = 111
+Best Subspace: 11
+Clusters Present
+Number of Clusters: 3
+------------------------------
+###########################################################################################################
+Starting INCRSUBCLU run with file = cuboid_two.csv ,mnPnts = 2 ,epsilon = 0.6 .....
+Opening File: cuboid_two.csv ....
+Opening File: cuboid_split.csv ....
+Opening File: Subspace1.csv ....
+1 0#
+2 0#
+1 0$
+2 0$
+Closing File.....
+Opening File: Subspace01.csv ....
+3 0#
+4 0#
+3 0$
+4 0$
+Closing File.....
+Opening File: Subspace11.csv ....
+7 0#
+8 0#
+7 0$
+8 0$
+Closing File.....
+Opening File: Subspace001.csv ....
+5 0#
+6 0#
+5 0$
+6 0$
+Closing File.....
+Opening File: Subspace101.csv ....
+9 0#
+10 0#
+9 0$
+10 0$
+Closing File.....
+Opening File: Subspace011.csv ....
+11 0#
+12 0#
+11 0$
+12 0$
+Closing File.....
+Opening File: Subspace111.csv ....
+13 0#
+14 0#
+15 0#
+13 0$
+14 0$
+15 0$
+Closing File.....
+Closing File.....
+Closing File.....
+0 13 1&
+1 13 2&
+2 13 3&
+3 13 4&
+0 17 1&
+0 16 1&
+1 16 2&
+0 7 1&
+0 11 1&
+1 11 2&
+1 7 2&
+2 16 3&
+0 9 1&
