@@ -321,7 +321,10 @@ void INCRSUBCLU :: newDatabase()
     
 	//now create the new 
 	fstream new_file;
-	new_file.open("n-"+databaseFilename,ios::out);
+
+	int dSize = databaseFilename.length();
+	string db = databaseFilename.substr(0, dSize - 4);
+	new_file.open(db + "__updated.csv",ios::out);
 	
 	//add points to new file
 	int line = 0;
@@ -331,7 +334,7 @@ void INCRSUBCLU :: newDatabase()
 		if(to_delete.find(point) != to_delete.end())
 		point = dummy;
 
-		for(int x : point)
+		for(double x : point)
 		{
 			new_file<<x<<" ";
 		}
