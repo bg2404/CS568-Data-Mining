@@ -4,9 +4,7 @@ This is the static C++ implementation of the SUBCLU algorithm.
 To **run**
 
 ```
-      make
-      ./subclu help
-      ./subclu {data set} {min points} {epsilon}
+      ./run.sh {file} {update file size} {update file} {min points} {epsilon}
 ```
 
 Dependencies for **testing**
