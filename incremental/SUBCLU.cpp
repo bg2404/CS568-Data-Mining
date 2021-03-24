@@ -51,12 +51,12 @@ map<Subspace, vector<Cluster>> SUBCLU::run() {
             DBSCAN dbscan(this->dataBase, currSubspace, this->epsilon, this->minPnts, this->dbids);
 
             vector<Cluster> clusters = dbscan.getClusters();
-            if (!(clusters.size() == 1 && clusters.front().isNoise())) {
+            //if (!(clusters.size() == 1 && clusters.back().isNoise())) {
                 (this->Clusterings).insert({currSubspace, clusters});
                 subspaces.push_back(currSubspace);
-                currSubspace.setClusters(clusters);
+                //currSubspace.setClusters(clusters);
                 // cout << "Clusters Present\n";
-            }
+            //}
             // cout << "Number of Clusters: " << clusters.size() << '\n';
 
             // cout << "------------------------------\n";
@@ -83,29 +83,28 @@ map<Subspace, vector<Cluster>> SUBCLU::run() {
 
                     if ((this->Clusterings).find(bestSubspace) != (this->Clusterings).end()) {
                         for (auto cluster : (((this->Clusterings).find(bestSubspace))->second)) {
-                            if (cluster.size() >= this->minPnts) {
+                            //if (cluster.size() >= this->minPnts) {
                                 map<int, int> idPairs = cluster.getIds();
                                 set<int> ids;
                                 for (auto x : idPairs)
                                     ids.insert(x.first);
-                                vector<Cluster> candidateClusters = runDBSCAN(candidate, ids);
+				if(ids.size()) {
+					vector<Cluster> candidateClusters = runDBSCAN(candidate, ids);
 
-                                if (!(candidateClusters.size() == 1 && candidateClusters.front().isNoise())) {
-                                    for (auto currCluster : candidateClusters)
-                                        clusters.push_back(currCluster);
-                                }
-                            }
+					for (auto currCluster : candidateClusters)
+						clusters.push_back(currCluster);
+				}
                         }
 
                     } else
                         cout << "Map error again\n";
 
-                    if (!clusters.empty()) {
+                    //if (!clusters.empty()) {
                         sub_d.push_back(candidate);
                         (this->Clusterings).insert({candidate, clusters});
                         candidate.setClusters(clusters);
                         // cout << "Clusters Present\n";
-                    }
+                    //}
                     // cout << "Number of Clusters: " << clusters.size() << '\n';
                     // cout << "------------------------------\n";
                 }
