@@ -1,0 +1,2 @@
+g++ -Wall -g -c INCRDBSCAN.cpp
+g++ -Wall -g -o subclu Relation.o BitsUtil.o Cluster.o Subspace.o ReadInput.o DBSCAN.o SUBCLU.o INCRDBSCAN.o INCRSUBCLU.o Main.o 

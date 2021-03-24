@@ -327,7 +327,7 @@ int INCRDBSCAN::getNearestCorePointClusterId(point p) {
 
 void INCRDBSCAN::addPointsToCheck(point p, set<point>& pointsToCheck) {
     map<int, Cluster>& clusters = m_subspace.getClusters();
-    map<int, int>& ids = clusters[p.clusterId].getIds();
+    map<int, int> ids = clusters[p.clusterId].getIds();
 
     for (auto& id : ids) {
         int i = id.first;

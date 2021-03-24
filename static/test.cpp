@@ -62,7 +62,7 @@ int main(int argc, char**argv) {
 			// create a new dataset with the point deleted
 			fstream fout;
 			int n = file.length();
-			string name = file.substr(0, n - 4) + "_" + to_string(cnt) + ".csv";
+			string name = file.substr(0, n - 4) + "__" + to_string(cnt) + ".csv";
 			fout.open(name, ios::out);
 
 			for(auto x : dataBase) {
