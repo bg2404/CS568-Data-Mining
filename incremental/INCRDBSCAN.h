@@ -40,8 +40,6 @@ class INCRDBSCAN {
     int m_id;
     bool change;
 
-    vector<point> getAndIncrementNeighbourhood();
-    vector<point> getAndDecrementNeighbourhood(int *pCid);
     vector<point> getPointsLostCore(vector<point> epsilonNeighbourhood);
     int getNearestCorePointClusterId(point p);
     void addPointsToCheck(point p, set<point> &pointsToCheck);
@@ -52,5 +50,9 @@ class INCRDBSCAN {
     bool getChange();
     Subspace Insert();
     Subspace Delete();
+    vector<point> getAndIncrementNeighbourhood();
+    vector<point> getAndDecrementNeighbourhood(int *pCid);
+    void setSubspace(Subspace& subspace);
+    Subspace getSubspace();
 };
 #endif

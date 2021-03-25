@@ -188,11 +188,19 @@ void INCRSUBCLU::run() {
 		//add noise point or simply deleting the point from pruned subspace 
 		//TODO find size of epsilon neighbourhood in the cluster or not
 		//better way to delete point from the cluster
+		
+		Subspace dummy;
+		INCRDBSCAN incrdb(update, this -> epsilon, this -> minPnts, this -> dataBase, dummy, (this -> dataBase).size(), (this -> dbids));
 		for(vector<int> dimensions : remainingSubspaces)
 		{
 			Subspace subspace = subspaces.find(dimensions)->second;
+			incrdb.setSubspace(subspace);
+
 			if(type == 1)
 			{
+				incrdb.getAndIncrementNeighbourhood();
+				subspace = incrdb.getSubspace();
+
 				int noiseClusterId = subspace.getNoiseClusterId();
 				map<int, Cluster>& clusters = subspace.getClusters();
 				clusters[noiseClusterId].insertId(dataBase.size(),0);
@@ -204,7 +212,11 @@ void INCRSUBCLU::run() {
 				for (auto& cluster : clusters) {
 					map<int, int>& ids = cluster.second.getIds();
 					if(ids.find(dbids[update]) != ids.end())
-					{	clusters[cluster.first].deleteId(dbids[update]);
+					{	
+						int pid = cluster.second.getClusterId(); 
+						incrdb.getAndDecrementNeighbourhood(&pid);
+						subspace = incrdb.getSubspace();
+						//clusters[cluster.first].deleteId(dbids[update]);
 						break;
 					}
 				}
@@ -346,3 +358,4 @@ void INCRSUBCLU :: newDatabase()
 
 
 }
+

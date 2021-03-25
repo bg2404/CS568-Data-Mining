@@ -352,4 +352,13 @@ bool INCRDBSCAN::getChange()
 {
     return change;
 }
+
+void INCRDBSCAN::setSubspace(Subspace& subspace) {
+	this -> m_subspace = subspace;
+}
+
+Subspace INCRDBSCAN::getSubspace() {
+	return this -> m_subspace;
+
+}
 //TODO: mean updation everywhere
