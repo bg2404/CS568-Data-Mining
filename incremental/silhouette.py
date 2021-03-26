@@ -39,6 +39,7 @@ for filename in glob.iglob('Subspace*.csv'):
                 idx = int(line[0])
                 point = list(map(float, db[idx].split()))
                 point_ss = []
+                
                 for name in names[:-1]:
                     point_ss.append(point[int(name)-1])
                 point_ss.append(cid)

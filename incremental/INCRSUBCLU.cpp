@@ -231,6 +231,7 @@ void INCRSUBCLU::run() {
 			this->dbids.insert(make_pair(update,this->dataBase.size()));
 			this->dataBase.push_back(update);
 		}
+		print();
 	}
 }
 

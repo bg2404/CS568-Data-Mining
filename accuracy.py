@@ -45,9 +45,9 @@ def get_priorities(count_matrix):
 
 def confusion_matrix(nclusters, oclusters):
     count_matrix = get_match_count(nclusters=nclusters, oclusters=oclusters)
-    # print(count_matrix)
+    print(count_matrix)
     priority_matrix = get_priorities(count_matrix=count_matrix)
-    # print(priority_matrix)
+    print(priority_matrix)
     assigned_cluster = [-1] * len(nclusters)
     for maxp in range(len(oclusters), 0, -1):
         for i in range(len(priority_matrix)):
@@ -69,7 +69,7 @@ def confusion_matrix(nclusters, oclusters):
                             assigned_cluster[idx] = -1
     correct_classifications = 0
     incorrect_classifications = 0
-    # print(assigned_cluster)
+    print(assigned_cluster)
     for i in range(len(assigned_cluster)):
         j = assigned_cluster[i]
         if j == -1:
